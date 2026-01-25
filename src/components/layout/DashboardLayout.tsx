@@ -24,6 +24,13 @@ import {
   X,
   ExternalLink,
 } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 
 const navItems = [
    {to: '/dashboard/benchmark', icon: BarChart3, label: 'Benchmark' },
@@ -90,7 +97,10 @@ export default function DashboardLayout() {
           {/* Logo Text */}
           {(!sidebarCollapsed || variant === 'mobile') && (
             <div className="leading-tight">
-              <p className="text-white font-semibold text-base">Syntropylabs</p>
+              <p className="text-white font-semibold text-base font-grotesk">
+  Syntropylabs
+</p>
+
               <p className="text-[12px] text-white/60">Workspace</p>
             </div>
           )}
@@ -200,7 +210,8 @@ export default function DashboardLayout() {
 
               <item.icon className={cn('w-5 h-5', isActive ? 'text-white' : 'text-white/80')} />
               {(!sidebarCollapsed || variant === 'mobile') && (
-                <span className="font-medium">{item.label}</span>
+                <span className="font-medium font-sans">{item.label}</span>
+
               )}
             </NavLink>
           );
@@ -259,12 +270,27 @@ export default function DashboardLayout() {
 
             {(!sidebarCollapsed || variant === 'mobile') && (
               <>
-                <div className="flex-1 text-left">
-                  <p className="text-sm font-semibold text-white truncate">
-                    {user?.email || 'user@example.com'}
-                  </p>
-                  <p className="text-xs text-white/60">Account</p>
-                </div>
+                <div className="flex-1 min-w-0 text-left">
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <p className="text-sm font-semibold text-white truncate cursor-default">
+          {user?.email || 'user@example.com'}
+        </p>
+      </TooltipTrigger>
+
+      <TooltipContent
+        side="top"
+        className="bg-black/80 text-white text-xs px-3 py-1 rounded-md"
+      >
+        {user?.email || 'user@example.com'}
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+
+  <p className="text-xs text-white/60">Account</p>
+</div>
+
 
                 <ChevronDown
                   className={cn(
@@ -375,9 +401,15 @@ export default function DashboardLayout() {
               <PanelLeft className={cn('w-5 h-5', isDark ? 'text-white' : 'text-black')} />
             </button>
 
-            <p className={cn('text-lg font-semibold', isDark ? 'text-white' : 'text-[#1f1b2e]')}>
-              Dashboard
-            </p>
+            <p
+  className={cn(
+    'text-lg font-semibold font-grotesk',
+    isDark ? 'text-white' : 'text-[#1f1b2e]'
+  )}
+>
+  Dashboard
+</p>
+
           </div>
 
           {/* ✅ Theme toggle (GLOBAL) */}

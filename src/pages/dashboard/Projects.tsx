@@ -61,18 +61,29 @@ export default function Projects() {
 
   // Fetch Orgs
   useEffect(() => {
-    const fetchOrgs = async () => {
-      try {
-        const orgs = await api.getOrganizations();
-        setOrganizations(orgs);
-        if (orgs.length > 0 && !selectedOrgId) setSelectedOrgId(orgs[0]._id);
-      } catch (error) {
-        console.error('Failed to fetch organizations', error);
+  const fetchOrgs = async () => {
+    try {
+      setLoading(true);
+
+      const orgs = await api.getOrganizations();
+      setOrganizations(orgs);
+
+      if (orgs.length > 0) {
+        setSelectedOrgId(orgs[0]._id);
+      } else {
+        // 👇 no orgs → stop loading so empty screen can appear
+        setLoading(false);
       }
-    };
-    fetchOrgs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    } catch (error) {
+      console.error('Failed to fetch organizations', error);
+      setLoading(false);
+    }
+  };
+
+  fetchOrgs();
+}, []);
+
 
   // Fetch Projects
   useEffect(() => {
@@ -160,12 +171,66 @@ export default function Projects() {
   );
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-[420px]">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: PRIMARY }} />
+  return (
+    <div className="flex items-center justify-center h-[420px]">
+      <Loader2 className="w-8 h-8 animate-spin" style={{ color: PRIMARY }} />
+    </div>
+  );
+}
+
+/* ✅ No organization empty state */
+if (!loading && organizations.length === 0) {
+  return (
+    <div className="flex items-center justify-center min-h-[70vh] animate-fade-in">
+      <div className="text-center max-w-md">
+
+        <div
+          className={cn(
+            'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 border',
+            isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/10'
+          )}
+        >
+          <Users
+            className={cn(
+              'w-10 h-10',
+              isDark ? 'text-white/70' : 'text-muted-foreground'
+            )}
+          />
+        </div>
+
+        <h2
+          className={cn(
+            'text-2xl font-bold',
+            isDark ? 'text-white' : 'text-foreground'
+          )}
+        >
+          Create an organization first
+        </h2>
+
+        <p
+          className={cn(
+            'mt-2 mb-6',
+            isDark ? 'text-white/60' : 'text-muted-foreground'
+          )}
+        >
+          You need an organization before creating your first project.
+        </p>
+
+        <button
+          onClick={() => navigate('/dashboard/organizations')}
+          className="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:opacity-95"
+          style={{
+            background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+          }}
+        >
+          <Plus className="w-4 h-4" />
+          Create Organization
+        </button>
+
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="space-y-6 animate-fade-in">

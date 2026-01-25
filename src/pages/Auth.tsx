@@ -28,7 +28,8 @@ export default function Auth() {
   const location = useLocation();
   const { toast } = useToast();
 
-  const from = location.state?.from?.pathname || '/dashboard/projects';
+  const from = location.state?.from?.pathname || '/dashboard/benchmark';
+
 
   // ✅ load theme
   useEffect(() => {
