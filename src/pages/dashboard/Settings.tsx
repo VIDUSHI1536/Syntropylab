@@ -1,54 +1,107 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/hooks/useTheme";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { api } from "@/lib/api";
 import {
   KeyRound,
-  Info,
-  Plus,
   Layers,
-  Tags
+  Tags,
+  Plus,
+  Save,
 } from "lucide-react";
 
-const PRIMARY = "#4D456E";
+/* ---------------------------------- */
 
 type TabType = "api" | "models" | "tags";
 
-const providers = [
-  {
-    id: "gemini",
-    name: "Google Gemini",
-    link: "https://makersuite.google.com/app/apikey",
-  },
-  {
-    id: "openai",
-    name: "OpenAI",
-    link: "https://platform.openai.com/api-keys",
-  },
-  {
-    id: "claude",
-    name: "Claude",
-    link: "https://console.anthropic.com/settings/keys",
-  },
-  {
-    id: "mistral",
-    name: "Mistral",
-    link: "https://console.mistral.ai/api-keys/",
-  },
+const PRIMARY = "#4D456E";
+
+const PROVIDERS = [
+  { id: "openai", name: "OpenAI" },
+  { id: "anthropic", name: "Anthropic (Claude)" },
+  { id: "google", name: "Google Gemini" },
+  { id: "mistral", name: "Mistral" },
+  { id: "cohere", name: "Cohere" },
 ];
+
+/* ---------------------------------- */
 
 export default function Settings() {
   const { isDark } = useTheme();
-  const [activeTab, setActiveTab] = useState<TabType>("api");
-  const [keys, setKeys] = useState<Record<string, string>>({});
+  const { toast } = useToast();
+  const { projectId } = useParams();
 
-  const handleChange = (id: string, value: string) => {
-    setKeys((prev) => ({ ...prev, [id]: value }));
+  const [activeTab, setActiveTab] = useState<TabType>("api");
+
+  const [apiKeysStatus, setApiKeysStatus] =
+    useState<Record<string, boolean>>({});
+
+  const [apiKeyInputs, setApiKeyInputs] =
+    useState<Record<string, string>>({});
+
+  const [savingKey, setSavingKey] = useState<string | null>(null);
+
+  /* ---------------------------------- */
+  /* Load API Key Status */
+
+  useEffect(() => {
+    if (!projectId) return;
+
+    const loadStatus = async () => {
+      try {
+        const status = await api.getApiKeysStatus(projectId);
+        setApiKeysStatus(status || {});
+      } catch (err) {
+        console.error("Failed to load key status", err);
+      }
+    };
+
+    loadStatus();
+  }, [projectId]);
+
+  /* ---------------------------------- */
+  /* Save Key */
+
+  const handleSaveKey = async (provider: string) => {
+    if (!apiKeyInputs[provider] || !projectId) return;
+
+    try {
+      setSavingKey(provider);
+
+      await api.updateApiKeys(projectId, {
+        [provider]: apiKeyInputs[provider],
+      });
+
+      toast({
+        title: "Success",
+        description: `${provider} key saved`,
+      });
+
+      setApiKeyInputs((prev) => ({ ...prev, [provider]: "" }));
+
+      const status = await api.getApiKeysStatus(projectId);
+      setApiKeysStatus(status || {});
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error",
+        description: "Failed to save key",
+        variant: "destructive",
+      });
+    } finally {
+      setSavingKey(null);
+    }
   };
 
+  /* ---------------------------------- */
+
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
 
       {/* HEADER */}
       <div>
@@ -58,14 +111,13 @@ export default function Settings() {
         >
           Settings
         </h1>
-
         <p
           className="mt-2"
           style={{
             color: isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.55)",
           }}
         >
-          Manage API keys, models and tags
+          Manage API keys and models for your projects.
         </p>
       </div>
 
@@ -74,8 +126,7 @@ export default function Settings() {
 
         {[
           { id: "api", label: "API Keys", icon: KeyRound },
-          { id: "models", label: "Model manager", icon: Layers },
-          { id: "tags", label: "Tag manager", icon: Tags },
+          { id: "models", label: "Model Manager", icon: Layers },
         ].map((tab) => {
           const Icon = tab.icon;
           const active = activeTab === tab.id;
@@ -100,10 +151,13 @@ export default function Settings() {
         })}
       </div>
 
-      {/* ================= API KEYS ================= */}
+      {/* ================================================= */}
+      {/* API KEYS TAB */}
+      {/* ================================================= */}
+
       {activeTab === "api" && (
         <div
-          className="rounded-3xl border p-8 transition-colors"
+          className="rounded-3xl border p-8"
           style={{
             background: isDark
               ? "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))"
@@ -113,8 +167,7 @@ export default function Settings() {
               : "rgba(0,0,0,0.08)",
           }}
         >
-
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-6">
             <KeyRound className="w-5 h-5 text-[#8B7CF6]" />
             <h2
               className="text-xl font-semibold"
@@ -124,33 +177,43 @@ export default function Settings() {
             </h2>
           </div>
 
-          <p
-            className="mt-3 flex items-center gap-2 text-sm"
-            style={{
-              color: isDark ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.55)",
-            }}
-          >
-            Stax uses your API keys to interact with AI models on your behalf.
-            <Info className="w-4 h-4 opacity-70" />
-          </p>
+          <div className="space-y-8">
 
-          <div className="mt-8 space-y-8">
-            {providers.map((p) => (
+            {PROVIDERS.map((p) => (
               <div key={p.id} className="space-y-2">
 
-                <p
-                  className="font-medium"
-                  style={{ color: isDark ? "#fff" : "#1f1b2e" }}
-                >
-                  {p.name}
-                </p>
+                <div className="flex items-center justify-between">
+                  <p
+                    className="font-medium"
+                    style={{ color: isDark ? "#fff" : "#1f1b2e" }}
+                  >
+                    {p.name}
+                  </p>
+
+                  {apiKeysStatus[p.id] && (
+                    <Badge
+                      variant="outline"
+                      className="text-green-600 border-green-600"
+                    >
+                      Configured
+                    </Badge>
+                  )}
+                </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Input
-                    placeholder="Add your key"
-                    value={keys[p.id] || ""}
+                    type="password"
+                    placeholder={
+                      apiKeysStatus[p.id]
+                        ? "••••••••••••"
+                        : "Enter API key"
+                    }
+                    value={apiKeyInputs[p.id] || ""}
                     onChange={(e) =>
-                      handleChange(p.id, e.target.value)
+                      setApiKeyInputs((prev) => ({
+                        ...prev,
+                        [p.id]: e.target.value,
+                      }))
                     }
                     className={cn(
                       "h-11 rounded-xl",
@@ -160,35 +223,41 @@ export default function Settings() {
                   />
 
                   <Button
+                    onClick={() => handleSaveKey(p.id)}
+                    disabled={
+                      !apiKeyInputs[p.id] ||
+                      savingKey === p.id
+                    }
                     className="h-11 rounded-xl px-6 text-white"
                     style={{
                       background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
                     }}
                   >
-                    <Plus className="w-4 h-4 mr-1" />
-                    Add key
+                    {savingKey === p.id ? (
+                      <Save className="w-4 h-4 animate-pulse" />
+                    ) : (
+                      <>
+                        <Plus className="w-4 h-4 mr-1" />
+                        Save
+                      </>
+                    )}
                   </Button>
                 </div>
 
-                <a
-                  href={p.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-sm text-[#8B7CF6] hover:underline"
-                >
-                  Get {p.name} API Key
-                </a>
-
               </div>
             ))}
+
           </div>
         </div>
       )}
 
-      {/* ================= MODEL MANAGER ================= */}
+      {/* ================================================= */}
+      {/* MODEL MANAGER */}
+      {/* ================================================= */}
+
       {activeTab === "models" && (
         <div
-          className="rounded-3xl border p-10 text-center"
+          className="rounded-3xl border p-12 text-center"
           style={{
             background: isDark
               ? "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))"
@@ -202,15 +271,18 @@ export default function Settings() {
           <Layers className="w-10 h-10 mx-auto mb-4 text-[#8B7CF6]" />
           <h3 className="text-lg font-semibold">Model Manager</h3>
           <p className="mt-2 opacity-70">
-            Configure and manage your available LLM models here.
+            Configure and manage your available models here.
           </p>
         </div>
       )}
 
-      {/* ================= TAG MANAGER ================= */}
+      {/* ================================================= */}
+      {/* TAG MANAGER */}
+      {/* ================================================= */}
+
       {activeTab === "tags" && (
         <div
-          className="rounded-3xl border p-10 text-center"
+          className="rounded-3xl border p-12 text-center"
           style={{
             background: isDark
               ? "linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))"

@@ -70,7 +70,10 @@ const App = () => (
               <Route index element={<Navigate to="/dashboard/projects" replace />} />
               <Route path="projects" element={<Projects />} />
               <Route path="projects/:projectId" element={<ProjectDetail />} />
-              <Route path="projects/:projectId/playground" element={<Playground />} />
+              <Route
+                path="/dashboard/projects/:projectId/playground"
+                element={<Playground />}
+              />
               <Route path="organizations" element={<Organizations />} />
               <Route path="datasets" element={<Datasets />} />
               <Route path="evaluators" element={<Evaluators />} />

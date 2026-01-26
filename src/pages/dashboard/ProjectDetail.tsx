@@ -16,6 +16,9 @@ import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/hooks/useTheme';
 import { api, Project } from '@/lib/api';
 import { cn } from '@/lib/utils';
+import Playground from "@/pages/dashboard/Playground";
+
+
 import {
   ChevronRight,
   Plus,
@@ -1139,10 +1142,12 @@ export default function ProjectDetail() {
               isDark && 'bg-[#1a1625] border-white/10'
             )}>
               <DropdownMenuItem 
-                onClick={() => setSettingsOpen(true)}
+                onClick={() =>
+                navigate(`/dashboard/settings`)
+                }
                 className={cn(isDark && 'hover:bg-white/10')}
               >
-                <Settings className="h-4 w-4 mr-2" /> Settings & API Keys
+                <Settings className="h-4 w-4 mr-2" /> Configure Api Keys 
               </DropdownMenuItem>
               <DropdownMenuSeparator className={cn(isDark && 'bg-white/10')} />
               <DropdownMenuItem onClick={handleDeleteProject} className="text-destructive">
@@ -1279,6 +1284,21 @@ export default function ProjectDetail() {
 
             {/* Upload Dataset Dialog */}
             <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+              <Button
+  variant="outline"
+  size="sm"
+  onClick={() => navigate(`/dashboard/projects/${projectId}/playground`)
+}
+  className={cn(
+    "rounded-xl flex items-center gap-2",
+    isDark && "bg-white/5 border-white/10 text-white hover:bg-white/10"
+  )}
+>
+  <Play className="w-4 h-4" />
+  Open Playground
+</Button>
+
+
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 

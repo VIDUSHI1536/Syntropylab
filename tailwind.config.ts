@@ -82,10 +82,10 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sora)", ...fontFamily.sans],
-        code: "var(--font-code)",
-        grotesk: "var(--font-grotesk)",
-      },
+  sans: ["var(--font-sans)"],
+  heading: ["var(--font-heading)"],
+},
+
       keyframes: {
         "accordion-down": {
           from: { height: "0" },

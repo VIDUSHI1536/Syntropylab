@@ -34,7 +34,6 @@ import {
   Loader2,
   Upload,
   Trash2,
-  Sparkles,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -258,7 +257,7 @@ export default function Datasets() {
                 Datasets
               </h1>
 
-              <Sparkles className="w-5 h-5 text-muted-foreground" />
+              {/* <Sparkles className="w-5 h-5 text-muted-foreground" /> */}
             </div>
 
             <p

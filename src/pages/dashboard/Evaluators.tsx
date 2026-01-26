@@ -30,7 +30,6 @@ import {
   Loader2,
   Plus,
   Trash2,
-  Sparkles,
 } from 'lucide-react';
 
 interface Evaluator {
@@ -294,7 +293,7 @@ const mappedRules: Evaluator[] = uniqueRules.map((r: any) => ({
                 Evaluator Gallery
               </h1>
 
-              <Sparkles className="w-5 h-5 text-muted-foreground" />
+              {/* <Sparkles className="w-5 h-5 text-muted-foreground" /> */}
             </div>
 
             <p

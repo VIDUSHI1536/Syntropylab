@@ -19,7 +19,6 @@ import {
   ArrowDown,
   Calendar,
   Download,
-  Sparkles,
 } from 'lucide-react';
 
 const PRIMARY = '#4D456E';
@@ -92,7 +91,7 @@ export default function Analytics() {
               >
                 Analytics
               </h1>
-              <Sparkles className="w-5 h-5 text-muted-foreground" />
+              {/* <Sparkles className="w-5 h-5 text-muted-foreground" /> */}
             </div>
 
             <p

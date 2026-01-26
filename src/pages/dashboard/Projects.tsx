@@ -28,7 +28,7 @@ import {
   Loader2,
   Trash2,
   FolderKanban,
-  Sparkles,
+  // Sparkles,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -283,7 +283,7 @@ if (!loading && organizations.length === 0) {
               >
                 Projects
               </h1>
-              <Sparkles className="w-5 h-5 text-muted-foreground" />
+              {/* <Sparkles className="w-5 h-5 text-muted-foreground" /> */}
             </div>
 
             <p

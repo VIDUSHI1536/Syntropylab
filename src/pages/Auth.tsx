@@ -30,7 +30,6 @@ export default function Auth() {
 
   const from = location.state?.from?.pathname || '/dashboard/benchmark';
 
-
   // ✅ load theme
   useEffect(() => {
     const saved = localStorage.getItem('syntropy-theme') as 'light' | 'dark' | null;

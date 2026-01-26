@@ -8,10 +8,16 @@
 @tailwind utilities;
 
 :root {
-  --font-sora: 'Sora', sans-serif;
-  --font-code: 'JetBrains Mono', monospace;
-  --font-grotesk: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --font-heading: 'Space Grotesk', system-ui, sans-serif;
 }
+
+body {
+  font-family: var(--font-sans);
+}
+
 
 
 @layer base {

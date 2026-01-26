@@ -37,7 +37,7 @@ import {
   ChevronRight,
   Loader2,
   Trash2,
-  Sparkles,
+  // Sparkles,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -544,7 +544,7 @@ export default function Organizations() {
               >
                 <FolderKanban className="w-4 h-4" style={{ color: PRIMARY }} />
                 Projects
-                <Sparkles className="w-4 h-4 text-muted-foreground" />
+                {/* <Sparkles className="w-4 h-4 text-muted-foreground" /> */}
               </CardTitle>
 
               {canManage && (
