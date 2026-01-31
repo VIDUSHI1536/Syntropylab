@@ -41,7 +41,7 @@ const navItems = [
   { to: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
 ];
 
-const PRIMARY = '#4D456E';
+const PRIMARY = '#5f3b96';
 
 export default function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -49,6 +49,8 @@ export default function DashboardLayout() {
 
   // ✅ Responsive mobile sidebar state
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [projectsOpen, setProjectsOpen] = useState(true);
+
 
   // ✅ THEME (GLOBAL)
   const { isDark, toggleTheme } = useTheme();
@@ -349,7 +351,7 @@ export default function DashboardLayout() {
       className="min-h-screen flex transition-colors duration-500"
       style={{
         background: isDark
-          ? 'linear-gradient(135deg, #0f0d18 0%, #141124 35%, #0b0a12 100%)'
+              ? 'linear-gradient(135deg, #2a1b40 0%, #141124 35%, #0b0a12 100%)'
           : 'linear-gradient(135deg, #ffffff 0%, #f6f4ff 40%, #ffffff 100%)',
       }}
     >

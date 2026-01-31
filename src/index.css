@@ -18,6 +18,9 @@ body {
   font-family: var(--font-sans);
 }
 
+.backdrop-blur-xl {
+  backdrop-filter: blur(20px);
+}
 
 
 @layer base {

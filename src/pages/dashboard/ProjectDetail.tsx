@@ -70,7 +70,7 @@ interface Evaluator {
   judgeModel?: string;
 }
 
-const PRIMARY = '#4D456E';
+const PRIMARY = '#5f3b96';
 
 export default function ProjectDetail() {
   const { projectId } = useParams();
@@ -129,11 +129,11 @@ export default function ProjectDetail() {
   const [apiKeyInputs, setApiKeyInputs] = useState<{ [key: string]: string }>({});
   const [updatingKey, setUpdatingKey] = useState<string | null>(null);
 
-  
+
   const [generatingSingleRow, setGeneratingSingleRow] = useState<number | null>(null);
   const [evaluatingSingleRow, setEvaluatingSingleRow] = useState<number | null>(null);
 
-  
+
   const [selectedRowIds, setSelectedRowIds] = useState<Set<string>>(new Set());
 
 
@@ -183,7 +183,7 @@ export default function ProjectDetail() {
       const ds = await api.getDatasetsByProject(projectId);
       setDatasets(ds);
 
-      
+
       if (ds.length === 1 && !selectedDatasetId) {
         setSelectedDatasetId(ds[0]._id);
       }
@@ -274,10 +274,10 @@ export default function ProjectDetail() {
 
           setRows(transformed);
 
-          
+
           const columnsToShow = new Set(visibleColumns);
 
-          
+
           const hasTokenData = transformed.some(r => r.outputTokens || r.totalTokens);
           const hasLatencyData = transformed.some(r => r.latency);
 
@@ -289,7 +289,7 @@ export default function ProjectDetail() {
             columnsToShow.add('latency');
           }
 
-          
+
           Object.keys(transformed[0] || {}).forEach(key => {
             if (key.startsWith('eval_')) {
               const hasData = transformed.some(r => r[key] !== undefined && r[key] !== null);
@@ -358,12 +358,12 @@ export default function ProjectDetail() {
     const updatedRows = [...rows, newRow];
     setRows(updatedRows);
 
-    
+
     if (selectedDatasetId) {
       try {
         const dataset = datasets.find(d => d._id === selectedDatasetId);
         const rowsToSave = updatedRows.map(row => {
-          
+
           const rowData: any = {
             [dataset?.columns?.inputColumn || 'input']: row.input,
             [dataset?.columns?.targetColumn || 'target']: row.target,
@@ -378,7 +378,7 @@ export default function ProjectDetail() {
             dateAdded: row.dateAdded,
           };
 
-          
+
           Object.keys(row).forEach(key => {
             if (key.startsWith('eval_') || key === 'overallScore') {
               rowData[key] = row[key];
@@ -402,8 +402,8 @@ export default function ProjectDetail() {
     );
     setRows(updatedRows);
 
-    
-    
+
+
   };
 
 
@@ -420,7 +420,7 @@ export default function ProjectDetail() {
     const updatedRows = rows.filter(row => row.id !== rowId);
     setRows(updatedRows);
 
-    
+
     if (selectedDatasetId) {
       try {
         const dataset = datasets.find(d => d._id === selectedDatasetId);
@@ -439,7 +439,7 @@ export default function ProjectDetail() {
             dateAdded: row.dateAdded,
           };
 
-          
+
           Object.keys(row).forEach(key => {
             if (key.startsWith('eval_') || key === 'overallScore') {
               rowData[key] = row[key];
@@ -468,7 +468,7 @@ export default function ProjectDetail() {
         selectedModel
       );
 
-      
+
       const datasetRows = await api.getDatasetRows(selectedDatasetId);
       const dataset = datasets.find(d => d._id === selectedDatasetId);
 
@@ -511,7 +511,7 @@ export default function ProjectDetail() {
         ruleIds
       );
 
-      
+
       const datasetRows = await api.getDatasetRows(selectedDatasetId);
       const dataset = datasets.find(d => d._id === selectedDatasetId);
 
@@ -619,7 +619,7 @@ export default function ProjectDetail() {
       setGenerating(true);
 
       if (selectedDatasetId) {
-        
+
         if (selectedRowIds.size > 0) {
           const selectedIndices = rows
             .map((row, idx) => selectedRowIds.has(row.id) ? idx : -1)
@@ -631,7 +631,7 @@ export default function ProjectDetail() {
 
           toast({ title: 'Success', description: `Generated ${selectedIndices.length} outputs` });
         } else {
-          
+
           await api.generateDatasetOutputs(selectedDatasetId, selectedModel);
           toast({ title: 'Success', description: 'Outputs generated!' });
         }
@@ -654,7 +654,7 @@ export default function ProjectDetail() {
           ...row,
         }));
         setRows(transformed);
-        setSelectedRowIds(new Set()); 
+        setSelectedRowIds(new Set());
       } else {
 
         toast({ title: 'Info', description: 'Please upload or select a dataset first to generate outputs', variant: 'default' });
@@ -684,7 +684,7 @@ export default function ProjectDetail() {
     try {
       setEvaluating(true);
 
-      
+
       if (selectedRowIds.size > 0) {
         const selectedIndices = rows
           .map((row, idx) => selectedRowIds.has(row.id) ? idx : -1)
@@ -703,7 +703,7 @@ export default function ProjectDetail() {
           await api.evaluateSingleRow(selectedDatasetId, idx, selectedModel, ruleIds);
         }
 
-        
+
         const datasetRows = await api.getDatasetRows(selectedDatasetId);
         const dataset = datasets.find(d => d._id === selectedDatasetId);
         const transformed: DataRow[] = datasetRows.map((row, idx) => ({
@@ -728,7 +728,7 @@ export default function ProjectDetail() {
         return;
       }
 
-      
+
       if (!rows.some(r => r.output)) {
         toast({ title: 'Error', description: 'Generate outputs first before evaluating', variant: 'destructive' });
         setEvaluating(false);
@@ -756,7 +756,7 @@ export default function ProjectDetail() {
         try {
           const results = await api.getEvaluationJobResults(job._id);
 
-          
+
           if (selectedDatasetId) {
             const datasetRows = await api.getDatasetRows(selectedDatasetId);
             const dataset = datasets.find(d => d._id === selectedDatasetId);
@@ -869,8 +869,8 @@ export default function ProjectDetail() {
 
   const renderMobileCard = (row: DataRow, index: number) => {
     return (
-      <Card 
-        key={row.id} 
+      <Card
+        key={row.id}
         className={cn(
           "mb-4 rounded-2xl border transition-colors",
           isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/10'
@@ -1096,8 +1096,8 @@ export default function ProjectDetail() {
           isDark ? 'border-white/10 bg-[#121022]' : 'border-border bg-background'
         )}>
           <div className="flex items-center gap-2 text-sm">
-            <Link 
-              to="/dashboard/projects" 
+            <Link
+              to="/dashboard/projects"
               className={cn(
                 "hover:text-foreground transition-colors",
                 isDark ? 'text-white/60 hover:text-white' : 'text-muted-foreground'
@@ -1113,9 +1113,9 @@ export default function ProjectDetail() {
               "font-semibold",
               isDark ? 'text-white' : 'text-foreground'
             )}>{project.name}</span>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className={cn(
                 "h-6 w-6",
                 isDark && 'hover:bg-white/10'
@@ -1141,13 +1141,13 @@ export default function ProjectDetail() {
             <DropdownMenuContent align="end" className={cn(
               isDark && 'bg-[#1a1625] border-white/10'
             )}>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() =>
-                navigate(`/dashboard/settings`)
+                  navigate(`/dashboard/settings`)
                 }
-                className={cn(isDark && 'hover:bg-white/10')}
+                className={cn(isDark && 'hover:bg-white/10 text-white')}
               >
-                <Settings className="h-4 w-4 mr-2" /> Configure Api Keys 
+                <Settings className="h-4 w-4 mr-2" /> Configure Api Keys
               </DropdownMenuItem>
               <DropdownMenuSeparator className={cn(isDark && 'bg-white/10')} />
               <DropdownMenuItem onClick={handleDeleteProject} className="text-destructive">
@@ -1158,7 +1158,7 @@ export default function ProjectDetail() {
         </div>
 
         {/* Metrics Cards */}
-        <div 
+        <div
           className={cn(
             "grid grid-cols-2 lg:grid-cols-4 gap-4 p-4 md:px-6 md:py-6 shrink-0",
             isDark ? 'bg-[#0c0a16]' : 'bg-muted/10'
@@ -1273,7 +1273,7 @@ export default function ProjectDetail() {
                 <SelectValue placeholder="No dataset" />
               </SelectTrigger>
               <SelectContent className={cn(
-                isDark && 'bg-[#1a1625] border-white/10'
+                isDark && 'bg-[#1a1625] border-white/10 text-white'
               )}>
                 <SelectItem value="none">No dataset (manual)</SelectItem>
                 {datasets.map(d => (
@@ -1285,23 +1285,22 @@ export default function ProjectDetail() {
             {/* Upload Dataset Dialog */}
             <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
               <Button
-  variant="outline"
-  size="sm"
-  onClick={() => navigate(`/dashboard/projects/${projectId}/playground`)
-}
-  className={cn(
-    "rounded-xl flex items-center gap-2",
-    isDark && "bg-white/5 border-white/10 text-white hover:bg-white/10"
-  )}
->
-  <Play className="w-4 h-4" />
-  Open Playground
-</Button>
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/dashboard/projects/${projectId}/playground`, { state: { projectName: project.name } })}
+                className={cn(
+                  "rounded-xl flex items-center gap-2",
+                  isDark && "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                )}
+              >
+                <Play className="w-4 h-4" />
+                Open Playground
+              </Button>
 
 
               <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className={cn(
                     "rounded-xl",
@@ -1323,10 +1322,10 @@ export default function ProjectDetail() {
                 <div className="space-y-4 pt-4">
                   <div>
                     <Label className={cn(isDark && 'text-white')}>CSV File</Label>
-                    <Input 
-                      type="file" 
-                      accept=".csv" 
-                      ref={fileInputRef} 
+                    <Input
+                      type="file"
+                      accept=".csv"
+                      ref={fileInputRef}
                       disabled={uploading}
                       className={cn(isDark && 'bg-white/5 border-white/10 text-white')}
                     />
@@ -1334,26 +1333,26 @@ export default function ProjectDetail() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className={cn(isDark && 'text-white')}>Input Column</Label>
-                      <Input 
-                        value={inputColumn} 
-                        onChange={e => setInputColumn(e.target.value)} 
+                      <Input
+                        value={inputColumn}
+                        onChange={e => setInputColumn(e.target.value)}
                         placeholder="input"
                         className={cn(isDark && 'bg-white/5 border-white/10 text-white')}
                       />
                     </div>
                     <div>
                       <Label className={cn(isDark && 'text-white')}>Target Column</Label>
-                      <Input 
-                        value={targetColumn} 
-                        onChange={e => setTargetColumn(e.target.value)} 
+                      <Input
+                        value={targetColumn}
+                        onChange={e => setTargetColumn(e.target.value)}
                         placeholder="target"
                         className={cn(isDark && 'bg-white/5 border-white/10 text-white')}
                       />
                     </div>
                   </div>
-                  <Button 
-                    onClick={handleFileUpload} 
-                    disabled={uploading} 
+                  <Button
+                    onClick={handleFileUpload}
+                    disabled={uploading}
                     className="w-full rounded-xl"
                     style={{
                       background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
@@ -1370,8 +1369,8 @@ export default function ProjectDetail() {
             {/* Columns Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className={cn(
                     "rounded-xl",
@@ -1386,14 +1385,14 @@ export default function ProjectDetail() {
                 isDark && 'bg-[#1a1625] border-white/10'
               )}>
                 {['input', 'systemInstructions', 'target', 'output', 'modelNickname', 'humanEvaluation', 'humanEvalNotes', 'latency', 'outputTokens', 'totalTokens',].map(col => (
-                  <DropdownMenuItem 
-                    key={col} 
+                  <DropdownMenuItem
+                    key={col}
                     onClick={() => {
                       setVisibleColumns(prev =>
                         prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
                       );
                     }}
-                    className={cn(isDark && 'hover:bg-white/10')}
+                    className={cn(isDark && 'hover:bg-white/10 text-white')}
                   >
                     <Checkbox checked={visibleColumns.includes(col)} className="mr-2" />
                     <span className={cn(isDark && 'text-white')}>{col}</span>
@@ -1401,15 +1400,15 @@ export default function ProjectDetail() {
                 ))}
                 <DropdownMenuSeparator className={cn(isDark && 'bg-white/10')} />
                 {evaluators.map(e => (
-                  <DropdownMenuItem 
-                    key={e._id} 
+                  <DropdownMenuItem
+                    key={e._id}
                     onClick={() => {
                       const col = `eval_${e._id}`;
                       setVisibleColumns(prev =>
                         prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
                       );
                     }}
-                    className={cn(isDark && 'hover:bg-white/10')}
+                    className={cn(isDark && 'hover:bg-white/10 text-white')}
                   >
                     <Checkbox checked={visibleColumns.includes(`eval_${e._id}`)} className="mr-2" />
                     <span className={cn(isDark && 'text-white')}>{e.name}</span>
@@ -1427,7 +1426,7 @@ export default function ProjectDetail() {
                 <SelectValue placeholder="Select model" />
               </SelectTrigger>
               <SelectContent className={cn(
-                isDark && 'bg-[#1a1625] border-white/10'
+                isDark && 'bg-[#1a1625] border-white/10 text-white'
               )}>
                 {availableModels.map(m => (
                   <SelectItem key={m} value={m}>{m}</SelectItem>
@@ -1448,8 +1447,8 @@ export default function ProjectDetail() {
               }
             }}>
               <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className={cn(
                     "rounded-xl",
@@ -1616,8 +1615,8 @@ export default function ProjectDetail() {
               disabled={generating || (selectedRowIds.size > 0 && selectedRowIds.size === 0)}
               className={cn(
                 "rounded-xl",
-                isDark 
-                  ? 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border-emerald-500/30' 
+                isDark
+                  ? 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border-emerald-500/30'
                   : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
               )}
             >
@@ -1860,8 +1859,8 @@ export default function ProjectDetail() {
                   )}
                   {visibleColumns.includes('modelNickname') && (
                     <td className="p-2">
-                      <Badge 
-                        variant="secondary" 
+                      <Badge
+                        variant="secondary"
                         className={cn(
                           "text-xs",
                           isDark && 'bg-white/10 text-white/80'
@@ -1949,9 +1948,9 @@ export default function ProjectDetail() {
                   <td className="p-2 text-center">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className={cn(
                             "h-6 w-6",
                             isDark && 'hover:bg-white/10'
@@ -1977,10 +1976,10 @@ export default function ProjectDetail() {
               {/* Add Row */}
               <tr>
                 <td colSpan={20} className="p-2">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={handleAddRow} 
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleAddRow}
                     className={cn(
                       isDark ? 'text-white/60 hover:text-white hover:bg-white/10' : 'text-muted-foreground'
                     )}
@@ -2001,10 +2000,10 @@ export default function ProjectDetail() {
           <div>Show {rows.length} rows</div>
           <div className="flex items-center gap-2">
             <span>1 of 1</span>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              disabled 
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled
               className={cn(
                 "h-6 w-6",
                 isDark && 'hover:bg-white/10'
@@ -2012,10 +2011,10 @@ export default function ProjectDetail() {
             >
               <ChevronRight className="h-4 w-4 rotate-180" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              disabled 
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled
               className={cn(
                 "h-6 w-6",
                 isDark && 'hover:bg-white/10'
@@ -2048,8 +2047,8 @@ export default function ProjectDetail() {
                     )}>
                       {provider}
                       {apiKeysStatus[provider] && (
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className="text-green-600 border-green-600"
                         >
                           Configured
@@ -2064,8 +2063,8 @@ export default function ProjectDetail() {
                       className={cn(isDark && 'bg-white/5 border-white/10 text-white')}
                     />
                   </div>
-                  <Button 
-                    onClick={() => handleUpdateApiKey(provider)} 
+                  <Button
+                    onClick={() => handleUpdateApiKey(provider)}
                     disabled={!apiKeyInputs[provider] || updatingKey === provider}
                     className="rounded-xl"
                     style={{

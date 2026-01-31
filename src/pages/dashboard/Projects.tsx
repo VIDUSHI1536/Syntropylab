@@ -41,7 +41,7 @@ interface Project extends ApiProject {
   lastUpdated?: Date;
 }
 
-const PRIMARY = '#4D456E';
+const PRIMARY = '#5f3b96';
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -61,28 +61,28 @@ export default function Projects() {
 
   // Fetch Orgs
   useEffect(() => {
-  const fetchOrgs = async () => {
-    try {
-      setLoading(true);
+    const fetchOrgs = async () => {
+      try {
+        setLoading(true);
 
-      const orgs = await api.getOrganizations();
-      setOrganizations(orgs);
+        const orgs = await api.getOrganizations();
+        setOrganizations(orgs);
 
-      if (orgs.length > 0) {
-        setSelectedOrgId(orgs[0]._id);
-      } else {
-        // 👇 no orgs → stop loading so empty screen can appear
+        if (orgs.length > 0) {
+          setSelectedOrgId(orgs[0]._id);
+        } else {
+          // 👇 no orgs → stop loading so empty screen can appear
+          setLoading(false);
+        }
+
+      } catch (error) {
+        console.error('Failed to fetch organizations', error);
         setLoading(false);
       }
+    };
 
-    } catch (error) {
-      console.error('Failed to fetch organizations', error);
-      setLoading(false);
-    }
-  };
-
-  fetchOrgs();
-}, []);
+    fetchOrgs();
+  }, []);
 
 
   // Fetch Projects
@@ -171,267 +171,219 @@ export default function Projects() {
   );
 
   if (loading) {
-  return (
-    <div className="flex items-center justify-center h-[420px]">
-      <Loader2 className="w-8 h-8 animate-spin" style={{ color: PRIMARY }} />
-    </div>
-  );
-}
+    return (
+      <div className="flex items-center justify-center h-[420px]">
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: PRIMARY }} />
+      </div>
+    );
+  }
 
-/* ✅ No organization empty state */
-if (!loading && organizations.length === 0) {
-  return (
-    <div className="flex items-center justify-center min-h-[70vh] animate-fade-in">
-      <div className="text-center max-w-md">
+  /* ✅ No organization empty state */
+  if (!loading && organizations.length === 0) {
+    return (
+      <div className="flex items-center justify-center min-h-[70vh] animate-fade-in">
+        <div className="text-center max-w-md">
 
-        <div
-          className={cn(
-            'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 border',
-            isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/10'
-          )}
-        >
-          <Users
+          <div
             className={cn(
-              'w-10 h-10',
-              isDark ? 'text-white/70' : 'text-muted-foreground'
+              'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 border',
+              isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/10'
             )}
-          />
+          >
+            <Users
+              className={cn(
+                'w-10 h-10',
+                isDark ? 'text-white/70' : 'text-muted-foreground'
+              )}
+            />
+          </div>
+
+          <h2
+            className={cn(
+              'text-2xl font-bold',
+              isDark ? 'text-white' : 'text-foreground'
+            )}
+          >
+            Create an organization first
+          </h2>
+
+          <p
+            className={cn(
+              'mt-2 mb-6',
+              isDark ? 'text-white/60' : 'text-muted-foreground'
+            )}
+          >
+            You need an organization before creating your first project.
+          </p>
+
+          <button
+            onClick={() => navigate('/dashboard/organizations')}
+            className="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:opacity-95"
+            style={{
+              background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+            }}
+          >
+            <Plus className="w-4 h-4" />
+            Create Organization
+          </button>
+
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+
+      {/* ================= HEADER ================= */}
+
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+        {/* LEFT */}
+        <div>
+          <div className="flex items-center gap-3">
+            <div
+              className="h-11 w-11 rounded-2xl flex items-center justify-center"
+              style={{
+                background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+              }}
+            >
+              <FolderKanban className="w-5 h-5 text-white" />
+            </div>
+
+            <h1
+              className={cn(
+                "text-3xl sm:text-4xl font-semibold tracking-tight",
+                isDark ? "text-white" : "text-slate-900"
+              )}
+            >
+              Projects
+            </h1>
+          </div>
+
+          <p
+            className={cn(
+              "mt-2 text-sm max-w-xl",
+              isDark ? "text-white/55" : "text-slate-500"
+            )}
+          >
+            Manage and monitor your AI evaluation projects
+          </p>
         </div>
 
-        <h2
-          className={cn(
-            'text-2xl font-bold',
-            isDark ? 'text-white' : 'text-foreground'
-          )}
-        >
-          Create an organization first
-        </h2>
+        {/* RIGHT */}
+        <div className="flex flex-col sm:flex-row gap-3">
 
-        <p
-          className={cn(
-            'mt-2 mb-6',
-            isDark ? 'text-white/60' : 'text-muted-foreground'
-          )}
-        >
-          You need an organization before creating your first project.
-        </p>
+          <Select value={selectedOrgId || ""} onValueChange={setSelectedOrgId}>
+            <SelectTrigger
+              className={cn(
+                "w-[220px] rounded-xl",
+                isDark && "bg-white/5 border-white/10 text-white"
+              )}
+            >
+              <SelectValue placeholder="Select organization" />
+            </SelectTrigger>
 
-        <button
-          onClick={() => navigate('/dashboard/organizations')}
-          className="inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:opacity-95"
-          style={{
-            background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-          }}
-        >
-          <Plus className="w-4 h-4" />
-          Create Organization
-        </button>
+            <SelectContent>
+              {organizations.map((o) => (
+                <SelectItem key={o._id} value={o._id}>
+                  {o.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-      </div>
-    </div>
-  );
-}
-
-  return (
-    <div className="space-y-6 animate-fade-in">
-      {/* HEADER */}
-      <div
-        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 transition-colors duration-300"
-        style={{
-          borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
-          background: isDark
-            ? 'linear-gradient(135deg, rgba(77,69,110,0.35) 0%, rgba(18,16,34,1) 55%, rgba(12,10,22,1) 100%)'
-            : 'white',
-          boxShadow: isDark
-            ? '0px 20px 50px rgba(0,0,0,0.35)'
-            : '0px 18px 40px rgba(0,0,0,0.06)',
-        }}
-      >
-        {/* glows */}
-        <div
-          className="absolute -top-20 -right-20 h-72 w-72 rounded-full blur-3xl opacity-40"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(77,69,110,0.30), transparent 70%)',
-          }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-30"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(77,69,110,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)',
-          }}
-        />
-
-        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          {/* Title */}
-          <div>
-            <div className="flex items-center gap-2">
-              <div
-                className="h-11 w-11 rounded-2xl flex items-center justify-center"
+          {/* CREATE PROJECT */}
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <button
+                disabled={!selectedOrgId}
+                className={cn(
+                  'inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:opacity-95 disabled:opacity-60',
+                  !selectedOrgId && 'cursor-not-allowed'
+                )}
                 style={{
                   background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
                 }}
               >
-                <FolderKanban className="w-5 h-5 text-white" />
-              </div>
-              <h1
-                className="text-2xl sm:text-3xl font-bold"
-                style={{ color: isDark ? '#fff' : '#1f1b2e' }}
-              >
-                Projects
-              </h1>
-              {/* <Sparkles className="w-5 h-5 text-muted-foreground" /> */}
-            </div>
-
-            <p
-              className="text-sm mt-2 max-w-2xl"
-              style={{
-                color: isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)',
-              }}
+                <Plus className="w-4 h-4" />
+                New Project
+              </button>
+            </DialogTrigger>
+            <DialogContent
+              className={cn(
+                "max-w-md rounded-3xl backdrop-blur-xl shadow-2xl",
+                isDark
+                  ? "bg-white/10 border border-white/20"
+                  : "bg-white/80 border border-black/10"
+              )}
             >
-              Manage your AI evaluation projects, track performance and organize your workspaces.
-            </p>
-          </div>
-
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
-            <Select value={selectedOrgId || ''} onValueChange={setSelectedOrgId}>
-              <SelectTrigger
-                className={cn(
-                  'w-full sm:w-[240px] rounded-2xl',
-                  isDark && 'bg-white/5 border-white/10 text-white'
-                )}
-              >
-                <SelectValue placeholder="Select Organization" />
-              </SelectTrigger>
-              <SelectContent>
-                {organizations.map((org) => (
-                  <SelectItem key={org._id} value={org._id}>
-                    {org.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <button
-                  disabled={!selectedOrgId}
+              <DialogHeader className="text-center space-y-2">
+                <DialogTitle
                   className={cn(
-                    'inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:opacity-95 disabled:opacity-60',
-                    !selectedOrgId && 'cursor-not-allowed'
+                    "text-2xl font-bold",
+                    isDark ? "text-white" : "text-foreground"
                   )}
-                  style={{
-                    background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-                  }}
                 >
-                  <Plus className="w-4 h-4" />
-                  New Project
-                </button>
-              </DialogTrigger>
+                  Create New Project
+                </DialogTitle>
 
-   <DialogContent className="bg-card border-border max-w-3xl rounded-3xl p-8">
+                <p
+                  className={cn(
+                    "text-sm",
+                    isDark ? "text-white/60" : "text-muted-foreground"
+                  )}
+                >
+                  Give your project a meaningful name
+                </p>
+              </DialogHeader>
 
-  {/* HEADER */}
-  <DialogHeader className="text-center space-y-2">
-    <DialogTitle className="text-2xl font-bold text-foreground">
-      Create a new evaluation project
-    </DialogTitle>
+              <div className="space-y-6 pt-6">
 
-    <p className="text-sm text-muted-foreground">
-      Choose between a single or side-by-side LLM evaluation
-    </p>
+                {/* Project Name */}
+                <div className="space-y-2">
+                  <label
+                    className={cn(
+                      "text-sm font-medium",
+                      isDark ? "text-white" : "text-foreground"
+                    )}
+                  >
+                    Project Name
+                  </label>
 
-    <a
-      href="/docs"
-      target="_blank"
-      className="text-sm text-primary underline"
-    >
-      View documentation ↗
-    </a>
-  </DialogHeader>
+                  <Input
+                    placeholder="Enter project name"
+                    value={newProjectName}
+                    onChange={(e) => setNewProjectName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleCreateProject()}
+                    className={cn(
+                      "h-12 rounded-xl",
+                      isDark
+                        ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+                        : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+                    )}
+                  />
+                </div>
 
-  {/* PROJECT NAME */}
-  <div className="mt-6">
-    <label className="text-sm font-medium text-foreground">
-      Project Name
-    </label>
-    <Input
-      className="mt-2"
-      placeholder="Enter project name"
-      value={newProjectName}
-      onChange={(e) => setNewProjectName(e.target.value)}
-    />
-  </div>
+                {/* Button */}
+                <Button
+                  onClick={handleCreateProject}
+                  className="
+        w-full h-12 rounded-2xl
+        text-white font-semibold
+        transition-all hover:scale-[1.02]
+      "
+                  variant="accent"
+                >
+                  Create Project
+                </Button>
 
-  {/* OPTIONS */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-
-    {/* POINTWISE */}
-    <div className="rounded-2xl border bg-background p-6 flex flex-col justify-between hover:shadow-md transition">
-      <div className="space-y-3">
-        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          📊
-        </div>
-
-        <h3 className="font-semibold text-lg">
-          Pointwise Evaluation
-        </h3>
-
-        <p className="text-sm text-muted-foreground">
-          Get a metric score for AI performance. Use this to evaluate absolute quality.
-        </p>
-      </div>
-
-      <Button
-        className="mt-6 w-full rounded-xl"
-        onClick={() => handleCreateProject("pointwise")}
-        style={{
-          background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-          color: "white",
-        }}
-      >
-        Create project
-      </Button>
-    </div>
-
-    {/* SIDE BY SIDE */}
-    <div className="rounded-2xl border bg-background p-6 flex flex-col justify-between hover:shadow-md transition">
-      <div className="space-y-3">
-        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-          🔀
-        </div>
-
-        <h3 className="font-semibold text-lg">
-          Side-by-Side Comparison
-        </h3>
-
-        <p className="text-sm text-muted-foreground">
-          Get a preference between two outputs. Compare models or prompts to choose the winner.
-        </p>
-      </div>
-
-      <Button
-        className="mt-6 w-full rounded-xl"
-        onClick={() => handleCreateProject("side-by-side")}
-        style={{
-          background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-          color: "white",
-        }}
-      >
-        Create project
-      </Button>
-    </div>
-
-  </div>
-</DialogContent>
+              </div>
+            </DialogContent>
 
 
-            </Dialog>
-          </div>
+
+          </Dialog>
         </div>
       </div>
 
@@ -456,7 +408,8 @@ if (!loading && organizations.length === 0) {
             <Card
               key={project._id}
               className={cn(
-                'group cursor-pointer rounded-3xl p-5 transition hover:shadow-xl overflow-hidden border',
+                'group cursor-pointer rounded-3xl p-5 transition-all duration-300 hover:shadow-xl overflow-hidden border hover:-translate-y-1 hover:scale-[1.02]',
+
                 isDark ? 'bg-white/5 border-white/10 hover:bg-white/7' : 'bg-white border-black/10'
               )}
               style={{

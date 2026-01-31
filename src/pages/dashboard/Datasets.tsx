@@ -49,7 +49,7 @@ interface Dataset {
   projectName?: string;
 }
 
-const PRIMARY = '#4D456E';
+const PRIMARY = '#5f3b96';
 
 export default function Datasets() {
   const { isDark } = useTheme();
@@ -205,43 +205,16 @@ export default function Datasets() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* ✅ PREMIUM HEADER */}
-      <div
-        className="relative overflow-hidden rounded-3xl border p-6 sm:p-8 transition-colors duration-300"
-        style={{
-          borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
-          background: isDark
-            ? 'linear-gradient(135deg, rgba(77,69,110,0.35) 0%, rgba(18,16,34,1) 55%, rgba(12,10,22,1) 100%)'
-            : 'white',
-          boxShadow: isDark
-            ? '0px 20px 50px rgba(0,0,0,0.35)'
-            : '0px 18px 40px rgba(0,0,0,0.06)',
-        }}
-      >
-        {/* glows */}
-        <div
-          className="absolute -top-20 -right-20 h-72 w-72 rounded-full blur-3xl opacity-40"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(77,69,110,0.30), transparent 70%)',
-          }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-30"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(77,69,110,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)',
-          }}
-        />
+    <div className="space-y-8 animate-fade-in">
 
-        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          {/* title */}
-          <div>
-            <div className="flex items-center gap-2">
-              <div
+      {/* ================= HEADER ================= */}
+
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+        {/* LEFT */}
+        <div>
+          <div className="flex items-center gap-3">
+            <div
                 className="h-11 w-11 rounded-2xl flex items-center justify-center"
                 style={{
                   background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
@@ -284,106 +257,203 @@ export default function Datasets() {
               </button>
             </DialogTrigger>
 
-            <DialogContent className={cn('bg-card border-border', isDark && 'bg-[#151127] border-white/10 text-white')}>
-              <DialogHeader>
-                <DialogTitle className={cn('text-foreground', isDark && 'text-white')}>
-                  Upload New Dataset
-                </DialogTitle>
-              </DialogHeader>
+     <DialogContent
+  className={cn(
+    "max-w-lg rounded-3xl backdrop-blur-xl shadow-2xl",
+    isDark
+      ? "bg-white/10 border border-white/20 text-white"
+      : "bg-white/80 border border-black/10 text-black"
+  )}
+>
+  <DialogHeader className="text-center space-y-2">
+    <DialogTitle
+      className={cn(
+        "text-2xl font-bold",
+        isDark ? "text-white" : "text-foreground"
+      )}
+    >
+      Upload New Dataset
+    </DialogTitle>
 
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <label className={cn('text-sm font-medium', isDark && 'text-white')}>
-                    Dataset Name
-                  </label>
-                  <Input
-                    placeholder="Dataset name"
-                    value={newDatasetName}
-                    onChange={(e) => setNewDatasetName(e.target.value)}
-                    className={cn(isDark && 'bg-white/5 border-white/10 text-white placeholder:text-white/40')}
-                  />
-                </div>
+    <p
+      className={cn(
+        "text-sm",
+        isDark ? "text-white/60" : "text-muted-foreground"
+      )}
+    >
+      Add a CSV file and map input & target columns
+    </p>
+  </DialogHeader>
 
-                <div className="space-y-2">
-                  <label className={cn('text-sm font-medium', isDark && 'text-white')}>
-                    Project
-                  </label>
-                  <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
-                    <SelectTrigger className={cn('rounded-2xl', isDark && 'bg-white/5 border-white/10 text-white')}>
-                      <SelectValue placeholder="Select a project" />
-                    </SelectTrigger>
-                    <SelectContent className={cn(isDark && 'bg-[#151127] border-white/10 text-white')}>
-                      {projects.map((p) => (
-                        <SelectItem key={p._id} value={p._id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+  <div className="space-y-6 pt-6">
 
-                <div className="space-y-2">
-                  <label className={cn('text-sm font-medium', isDark && 'text-white')}>
-                    CSV File
-                  </label>
-                  <Input
-                    type="file"
-                    accept=".csv"
-                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                    className={cn(
-                      'cursor-pointer rounded-2xl',
-                      isDark && 'bg-white/5 border-white/10 text-white file:text-white'
-                    )}
-                  />
-                </div>
+    {/* Dataset Name */}
+    <div className="space-y-2">
+      <label
+        className={cn(
+          "text-sm font-medium",
+          isDark ? "text-white" : "text-foreground"
+        )}
+      >
+        Dataset Name
+      </label>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <label className={cn('text-sm font-medium', isDark && 'text-white')}>
-                      Input Column
-                    </label>
-                    <Input
-                      value={inputColumn}
-                      onChange={(e) => setInputColumn(e.target.value)}
-                      className={cn('rounded-2xl', isDark && 'bg-white/5 border-white/10 text-white placeholder:text-white/40')}
-                      placeholder="input"
-                    />
-                  </div>
+      <Input
+        placeholder="Dataset name"
+        value={newDatasetName}
+        onChange={(e) => setNewDatasetName(e.target.value)}
+        className={cn(
+          "h-11 rounded-xl",
+          isDark
+            ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+            : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+        )}
+      />
+    </div>
 
-                  <div className="space-y-2">
-                    <label className={cn('text-sm font-medium', isDark && 'text-white')}>
-                      Target Column
-                    </label>
-                    <Input
-                      value={targetColumn}
-                      onChange={(e) => setTargetColumn(e.target.value)}
-                      className={cn('rounded-2xl', isDark && 'bg-white/5 border-white/10 text-white placeholder:text-white/40')}
-                      placeholder="target"
-                    />
-                  </div>
-                </div>
+    {/* Project */}
+    <div className="space-y-2">
+      <label
+        className={cn(
+          "text-sm font-medium",
+          isDark ? "text-white" : "text-foreground"
+        )}
+      >
+        Project
+      </label>
 
-                <Button
-                  onClick={handleCreateDataset}
-                  className="w-full rounded-2xl"
-                  disabled={uploading}
-                  style={{
-                    background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-                    color: 'white',
-                  }}
-                >
-                  {uploading ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                  ) : (
-                    <Upload className="w-4 h-4 mr-2" />
-                  )}
-                  Upload Dataset
-                </Button>
-              </div>
-            </DialogContent>
+      <Select value={selectedProjectId} onValueChange={setSelectedProjectId}>
+        <SelectTrigger
+          className={cn(
+            "h-11 rounded-xl",
+            isDark
+              ? "bg-white/5 border-white/20 text-white"
+              : "bg-white border-black/10 text-black"
+          )}
+        >
+          <SelectValue placeholder="Select a project" />
+        </SelectTrigger>
+
+        <SelectContent
+          className={cn(
+            isDark
+              ? "bg-[#151127] border-white/20 text-white"
+              : "bg-white border-black/10 text-black"
+          )}
+        >
+          {projects.map((p) => (
+            <SelectItem key={p._id} value={p._id}>
+              {p.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+
+    {/* CSV File */}
+    <div className="space-y-2">
+      <label
+        className={cn(
+          "text-sm font-medium",
+          isDark ? "text-white" : "text-foreground"
+        )}
+      >
+        CSV File
+      </label>
+
+      <Input
+        type="file"
+        accept=".csv"
+        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+        className={cn(
+          "h-11 rounded-xl cursor-pointer",
+          isDark
+            ? "bg-white/5 border-white/20 text-white file:text-white"
+            : "bg-white border-black/10 text-black file:text-black"
+        )}
+      />
+    </div>
+
+    {/* Columns */}
+    <div className="grid grid-cols-2 gap-4">
+
+      <div className="space-y-2">
+        <label
+          className={cn(
+            "text-sm font-medium",
+            isDark ? "text-white" : "text-foreground"
+          )}
+        >
+          Input Column
+        </label>
+
+        <Input
+          value={inputColumn}
+          onChange={(e) => setInputColumn(e.target.value)}
+          placeholder="input"
+          className={cn(
+            "h-11 rounded-xl",
+            isDark
+              ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+              : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+          )}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label
+          className={cn(
+            "text-sm font-medium",
+            isDark ? "text-white" : "text-foreground"
+          )}
+        >
+          Target Column
+        </label>
+
+        <Input
+          value={targetColumn}
+          onChange={(e) => setTargetColumn(e.target.value)}
+          placeholder="target"
+          className={cn(
+            "h-11 rounded-xl",
+            isDark
+              ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+              : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+          )}
+        />
+      </div>
+
+    </div>
+
+    {/* Upload Button */}
+    <Button
+      onClick={handleCreateDataset}
+      disabled={uploading}
+      className="
+        w-full h-12 rounded-2xl
+        text-white font-semibold
+        transition-all hover:scale-[1.02]
+      "
+      style={{
+        background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+      }}
+    >
+      {uploading ? (
+        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+      ) : (
+        <Upload className="w-4 h-4 mr-2" />
+      )}
+      Upload Dataset
+    </Button>
+
+  </div>
+</DialogContent>
+
+
+
           </Dialog>
         </div>
-      </div>
+      
 
       {/* ✅ SEARCH BAR */}
       <div className="relative max-w-md">
@@ -406,7 +476,8 @@ export default function Datasets() {
             <Card
               key={dataset._id}
               className={cn(
-                'group rounded-3xl border p-5 transition hover:shadow-xl overflow-hidden',
+                'group cursor-pointer rounded-3xl p-5 transition-all duration-300 hover:shadow-xl overflow-hidden border hover:-translate-y-1 hover:scale-[1.02]',
+
                 isDark ? 'bg-white/5 border-white/10 hover:bg-white/7' : 'bg-white border-black/10'
               )}
               style={{

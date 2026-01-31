@@ -21,7 +21,7 @@ import {
   Download,
 } from 'lucide-react';
 
-const PRIMARY = '#4D456E';
+const PRIMARY = '#5f3b96';
 
 const stats = [
   { label: 'Total Evaluations', value: '12,456', change: '+12%', positive: true, icon: BarChart3 },
@@ -42,42 +42,14 @@ export default function Analytics() {
   const isDark = theme === 'dark';
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* HEADER */}
-      <div
-        className="relative overflow-hidden rounded-3xl border p-6 sm:p-8 transition-colors duration-300"
-        style={{
-          borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
-          background: isDark
-            ? 'linear-gradient(135deg, rgba(77,69,110,0.35) 0%, rgba(18,16,34,1) 55%, rgba(12,10,22,1) 100%)'
-            : 'white',
-          boxShadow: isDark
-            ? '0px 20px 50px rgba(0,0,0,0.35)'
-            : '0px 18px 40px rgba(0,0,0,0.06)',
-        }}
-      >
-        {/* glow blobs */}
-        <div
-          className="absolute -top-20 -right-20 h-72 w-72 rounded-full blur-3xl opacity-40"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(77,69,110,0.30), transparent 70%)',
-          }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-30"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(77,69,110,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)',
-          }}
-        />
+    <div className="space-y-8 animate-fade-in">
 
-        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <div
+      {/* HEADER */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+        <div>
+          <div className="flex items-center gap-3">
+           <div
                 className="h-11 w-11 rounded-2xl flex items-center justify-center"
                 style={{
                   background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
@@ -137,7 +109,7 @@ export default function Analytics() {
             </button>
           </div>
         </div>
-      </div>
+
 
       {/* STATS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

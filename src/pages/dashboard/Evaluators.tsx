@@ -45,7 +45,7 @@ interface Evaluator {
   isGlobal?: boolean;
 }
 
-const PRIMARY = '#4D456E';
+const PRIMARY = '#5f3b96';
 
 const categoryConfig = {
   quality: { label: 'Quality', badge: 'bg-blue-100 text-blue-700 border-blue-200' },
@@ -242,42 +242,14 @@ const mappedRules: Evaluator[] = uniqueRules.map((r: any) => ({
   }
 
   return (
-    <div className="space-y-7 animate-fade-in">
-      {/* HEADER */}
-      <div
-        className="relative overflow-hidden rounded-3xl border p-6 sm:p-8 transition-colors duration-300"
-        style={{
-          borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
-          background: isDark
-            ? 'linear-gradient(135deg, rgba(77,69,110,0.35) 0%, rgba(18,16,34,1) 55%, rgba(12,10,22,1) 100%)'
-            : 'white',
-          boxShadow: isDark
-            ? '0px 20px 50px rgba(0,0,0,0.35)'
-            : '0px 18px 40px rgba(0,0,0,0.06)',
-        }}
-      >
-        {/* glow blobs */}
-        <div
-          className="absolute -top-20 -right-20 h-72 w-72 rounded-full blur-3xl opacity-40"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(77,69,110,0.30), transparent 70%)',
-          }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-30"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(77,69,110,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)',
-          }}
-        />
+    <div className="space-y-8 animate-fade-in">
 
-        <div className="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <div
+      {/* HEADER */}
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+        <div>
+          <div className="flex items-center gap-3">
+           <div
                 className="h-11 w-11 rounded-2xl flex items-center justify-center"
                 style={{
                   background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
@@ -318,81 +290,183 @@ const mappedRules: Evaluator[] = uniqueRules.map((r: any) => ({
               </button>
             </DialogTrigger>
 
-            <DialogContent className="bg-card border-border">
-              <DialogHeader>
-                <DialogTitle>Create New Evaluator</DialogTitle>
-              </DialogHeader>
+           <DialogContent
+  className={cn(
+    "max-w-lg rounded-3xl backdrop-blur-xl shadow-2xl",
+    isDark
+      ? "bg-white/10 border border-white/20 text-white"
+      : "bg-white/80 border border-black/10 text-black"
+  )}
+>
+  <DialogHeader className="text-center space-y-2">
+    <DialogTitle
+      className={cn(
+        "text-2xl font-bold",
+        isDark ? "text-white" : "text-foreground"
+      )}
+    >
+      Create New Evaluator
+    </DialogTitle>
 
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label>Name</Label>
-                  <Input
-                    value={newRule.name}
-                    onChange={(e) => setNewRule({ ...newRule, name: e.target.value })}
-                    placeholder="e.g. Tone Consistency"
-                  />
-                </div>
+    <p
+      className={cn(
+        "text-sm",
+        isDark ? "text-white/60" : "text-muted-foreground"
+      )}
+    >
+      Define a custom evaluation rule and prompt
+    </p>
+  </DialogHeader>
 
-                <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Input
-                    value={newRule.description}
-                    onChange={(e) => setNewRule({ ...newRule, description: e.target.value })}
-                    placeholder="What does this metric evaluate?"
-                  />
-                </div>
+  <div className="space-y-6 pt-6">
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Category</Label>
-                    <Select
-                      value={newRule.category}
-                      onValueChange={(v) => setNewRule({ ...newRule, category: v })}
-                    >
-                      <SelectTrigger className="rounded-2xl">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="quality">Quality</SelectItem>
-                        <SelectItem value="safety">Safety</SelectItem>
-                        <SelectItem value="performance">Performance</SelectItem>
-                        <SelectItem value="custom">Custom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+    {/* Name */}
+    <div className="space-y-2">
+      <Label className={cn(isDark ? "text-white" : "text-foreground")}>
+        Name
+      </Label>
 
-                  <div className="space-y-2">
-                    <Label>Type</Label>
-                    <Input value="Prompt Template" disabled />
-                  </div>
-                </div>
+      <Input
+        value={newRule.name}
+        onChange={(e) =>
+          setNewRule({ ...newRule, name: e.target.value })
+        }
+        placeholder="e.g. Tone Consistency"
+        className={cn(
+          "h-11 rounded-xl",
+          isDark
+            ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+            : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+        )}
+      />
+    </div>
 
-                <div className="space-y-2">
-                  <Label>Prompt Template</Label>
-                  <Textarea
-                    value={newRule.customPrompt}
-                    onChange={(e) => setNewRule({ ...newRule, customPrompt: e.target.value })}
-                    placeholder="Enter your evaluation prompt..."
-                    className="min-h-[140px] font-mono"
-                  />
-                </div>
+    {/* Description */}
+    <div className="space-y-2">
+      <Label className={cn(isDark ? "text-white" : "text-foreground")}>
+        Description
+      </Label>
 
-                <Button
-                  onClick={handleCreateRule}
-                  disabled={creating}
-                  className="w-full rounded-2xl"
-                  style={{
-                    background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-                    color: 'white',
-                  }}
-                >
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Evaluator'}
-                </Button>
-              </div>
-            </DialogContent>
+      <Input
+        value={newRule.description}
+        onChange={(e) =>
+          setNewRule({ ...newRule, description: e.target.value })
+        }
+        placeholder="What does this metric evaluate?"
+        className={cn(
+          "h-11 rounded-xl",
+          isDark
+            ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+            : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+        )}
+      />
+    </div>
+
+    {/* Category + Type */}
+    <div className="grid grid-cols-2 gap-4">
+
+      <div className="space-y-2">
+        <Label className={cn(isDark ? "text-white" : "text-foreground")}>
+          Category
+        </Label>
+
+        <Select
+          value={newRule.category}
+          onValueChange={(v) =>
+            setNewRule({ ...newRule, category: v })
+          }
+        >
+          <SelectTrigger
+            className={cn(
+              "h-11 rounded-xl",
+              isDark
+                ? "bg-white/5 border-white/20 text-white"
+                : "bg-white border-black/10 text-black"
+            )}
+          >
+            <SelectValue />
+          </SelectTrigger>
+
+          <SelectContent
+            className={cn(
+              isDark
+                ? "bg-[#151127] border-white/20 text-white"
+                : "bg-white border-black/10 text-black"
+            )}
+          >
+            <SelectItem value="quality">Quality</SelectItem>
+            <SelectItem value="safety">Safety</SelectItem>
+            <SelectItem value="performance">Performance</SelectItem>
+            <SelectItem value="custom">Custom</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-2">
+        <Label className={cn(isDark ? "text-white" : "text-foreground")}>
+          Type
+        </Label>
+
+        <Input
+          value="Prompt Template"
+          disabled
+          className={cn(
+            "h-11 rounded-xl",
+            isDark
+              ? "bg-white/10 border-white/20 text-white/70"
+              : "bg-gray-100 border-black/10 text-black/70"
+          )}
+        />
+      </div>
+
+    </div>
+
+    {/* Prompt */}
+    <div className="space-y-2">
+      <Label className={cn(isDark ? "text-white" : "text-foreground")}>
+        Prompt Template
+      </Label>
+
+      <Textarea
+        value={newRule.customPrompt}
+        onChange={(e) =>
+          setNewRule({ ...newRule, customPrompt: e.target.value })
+        }
+        placeholder="Enter your evaluation prompt..."
+        className={cn(
+          "min-h-[140px] font-mono rounded-xl",
+          isDark
+            ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+            : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+        )}
+      />
+    </div>
+
+    {/* Button */}
+    <Button
+      onClick={handleCreateRule}
+      disabled={creating}
+      className="
+        w-full h-12 rounded-2xl
+        text-white font-semibold
+        transition-all hover:scale-[1.02]
+      "
+      style={{
+        background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+      }}
+    >
+      {creating ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        "Create Evaluator"
+      )}
+    </Button>
+
+  </div>
+</DialogContent>
+
           </Dialog>
         </div>
-      </div>
 
       {/* FEATURED */}
       {featuredEvaluators.length > 0 && (
@@ -412,7 +486,8 @@ const mappedRules: Evaluator[] = uniqueRules.map((r: any) => ({
                 <Card
                   key={evaluator._id}
                   className={cn(
-                    'relative group rounded-3xl overflow-hidden border p-5 transition hover:shadow-xl',
+                    'relative group cursor-pointer rounded-3xl p-5 transition-all duration-300 hover:shadow-xl overflow-hidden border hover:-translate-y-1 hover:scale-[1.02]',
+
                     isDark ? 'bg-white/5 border-white/10 hover:bg-white/7' : 'bg-white border-black/10'
                   )}
                   style={{

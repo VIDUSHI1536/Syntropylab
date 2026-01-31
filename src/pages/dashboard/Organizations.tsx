@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 
-const PRIMARY = '#4D456E';
+const PRIMARY = '#5f3b96';
 
 const roleConfig: Record<string, { icon: any; badge: string }> = {
   Owner: {
@@ -219,42 +219,16 @@ export default function Organizations() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* HEADER */}
-      <div
-        className="relative overflow-hidden rounded-3xl border p-6 sm:p-8 transition-colors duration-300"
-        style={{
-          borderColor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
-          background: isDark
-            ? 'linear-gradient(135deg, rgba(77,69,110,0.35) 0%, rgba(18,16,34,1) 55%, rgba(12,10,22,1) 100%)'
-            : 'white',
-          boxShadow: isDark
-            ? '0px 20px 50px rgba(0,0,0,0.35)'
-            : '0px 18px 40px rgba(0,0,0,0.06)',
-        }}
-      >
-        {/* glowing blobs */}
-        <div
-          className="absolute -top-20 -right-20 h-72 w-72 rounded-full blur-3xl opacity-40"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(107,95,197,0.22), transparent 70%)'
-              : 'radial-gradient(circle, rgba(77,69,110,0.30), transparent 70%)',
-          }}
-        />
-        <div
-          className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full blur-3xl opacity-30"
-          style={{
-            background: isDark
-              ? 'radial-gradient(circle, rgba(77,69,110,0.25), transparent 70%)'
-              : 'radial-gradient(circle, rgba(107,95,197,0.25), transparent 70%)',
-          }}
-        />
+    <div className="space-y-8 animate-fade-in">
 
-        <div className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <div
+      {/* ================= HEADER ================= */}
+
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+
+        {/* LEFT */}
+        <div>
+          <div className="flex items-center gap-3">
+            <div
                 className="h-11 w-11 rounded-2xl flex items-center justify-center"
                 style={{
                   background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
@@ -292,33 +266,70 @@ export default function Organizations() {
                 New Organization
               </button>
             </DialogTrigger>
+<DialogContent
+  className={cn(
+    "max-w-md rounded-3xl backdrop-blur-xl shadow-2xl",
+    isDark
+      ? "bg-white/10 border border-white/20"
+      : "bg-white/80 border border-black/10"
+  )}
+>
+  <DialogHeader className="text-center space-y-2">
+    <DialogTitle
+      className={cn(
+        "text-2xl font-bold",
+        isDark ? "text-white" : "text-foreground"
+      )}
+    >
+      Create Organization
+    </DialogTitle>
 
-            <DialogContent className="bg-card border-border">
-              <DialogHeader>
-                <DialogTitle>Create Organization</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <Input
-                  placeholder="Organization name"
-                  value={newOrgName}
-                  onChange={(e) => setNewOrgName(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleCreateOrg()}
-                />
-                <Button
-                  onClick={handleCreateOrg}
-                  className="w-full"
-                  style={{
-                    background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-                    color: 'white',
-                  }}
-                >
-                  Create
-                </Button>
-              </div>
-            </DialogContent>
+    <p
+      className={cn(
+        "text-sm",
+        isDark ? "text-white/60" : "text-muted-foreground"
+      )}
+    >
+      Give your organization a name
+    </p>
+  </DialogHeader>
+
+  <div className="space-y-6 pt-6">
+
+    {/* Organization Name */}
+    <Input
+      placeholder="Organization name"
+      value={newOrgName}
+      onChange={(e) => setNewOrgName(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleCreateOrg()}
+      className={cn(
+        "h-12 rounded-xl",
+        isDark
+          ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+          : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+      )}
+    />
+
+    {/* Button */}
+    <Button
+      onClick={handleCreateOrg}
+      className="
+        w-full h-12 rounded-2xl
+        text-white font-semibold
+        transition-all hover:scale-[1.02]
+      "
+      style={{
+        background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+      }}
+    >
+      Create Organization
+    </Button>
+
+  </div>
+</DialogContent>
+
           </Dialog>
         </div>
-      </div>
 
       {/* ORG SELECTOR */}
       <div className="flex flex-col lg:flex-row lg:items-center gap-4">
@@ -418,51 +429,124 @@ export default function Organizations() {
                     </button>
                   </DialogTrigger>
 
-                  <DialogContent className="bg-card border-border">
-                    <DialogHeader>
-                      <DialogTitle>Invite to {selectedOrg.name}</DialogTitle>
-                    </DialogHeader>
+                  <DialogContent
+  className={cn(
+    "max-w-md rounded-3xl backdrop-blur-xl shadow-2xl",
+    isDark
+      ? "bg-white/10 border border-white/20 text-white"
+      : "bg-white/80 border border-black/10 text-black"
+  )}
+>
+  <DialogHeader className="text-center space-y-2">
+    <DialogTitle
+      className={cn(
+        "text-2xl font-bold",
+        isDark ? "text-white" : "text-foreground"
+      )}
+    >
+      Invite to {selectedOrg.name}
+    </DialogTitle>
 
-                    <div className="space-y-4 pt-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Email</label>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                          <Input
-                            type="email"
-                            placeholder="colleague@example.com"
-                            className="pl-10 rounded-2xl"
-                            value={inviteEmail}
-                            onChange={(e) => setInviteEmail(e.target.value)}
-                          />
-                        </div>
-                      </div>
+    <p
+      className={cn(
+        "text-sm",
+        isDark ? "text-white/60" : "text-muted-foreground"
+      )}
+    >
+      Invite a teammate to collaborate
+    </p>
+  </DialogHeader>
 
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Role</label>
-                        <Select value={inviteRole} onValueChange={setInviteRole}>
-                          <SelectTrigger className="rounded-2xl">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Member">Member</SelectItem>
-                            <SelectItem value="Admin">Admin</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+  <div className="space-y-6 pt-6">
 
-                      <Button
-                        onClick={handleInvite}
-                        className="w-full rounded-2xl"
-                        style={{
-                          background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-                          color: 'white',
-                        }}
-                      >
-                        Send Invitation
-                      </Button>
-                    </div>
-                  </DialogContent>
+    {/* Email */}
+    <div className="space-y-2">
+      <label
+        className={cn(
+          "text-sm font-medium",
+          isDark ? "text-white" : "text-foreground"
+        )}
+      >
+        Email
+      </label>
+
+      <div className="relative">
+        <Mail
+          className={cn(
+            "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4",
+            isDark ? "text-white/40" : "text-muted-foreground"
+          )}
+        />
+
+        <Input
+          type="email"
+          placeholder="colleague@example.com"
+          className={cn(
+            "pl-10 h-12 rounded-xl",
+            isDark
+              ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+              : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+          )}
+          value={inviteEmail}
+          onChange={(e) => setInviteEmail(e.target.value)}
+        />
+      </div>
+    </div>
+
+    {/* Role */}
+    <div className="space-y-2">
+      <label
+        className={cn(
+          "text-sm font-medium",
+          isDark ? "text-white" : "text-foreground"
+        )}
+      >
+        Role
+      </label>
+
+      <Select value={inviteRole} onValueChange={setInviteRole}>
+        <SelectTrigger
+          className={cn(
+            "h-12 rounded-xl",
+            isDark
+              ? "bg-white/5 border-white/20 text-white"
+              : "bg-white border-black/10 text-black"
+          )}
+        >
+          <SelectValue />
+        </SelectTrigger>
+
+        <SelectContent
+          className={cn(
+            isDark
+              ? "bg-[#151127] border-white/20 text-white"
+              : "bg-white border-black/10 text-black"
+          )}
+        >
+          <SelectItem value="Member">Member</SelectItem>
+          <SelectItem value="Admin">Admin</SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
+
+    {/* Button */}
+    <Button
+      onClick={handleInvite}
+      className="
+        w-full h-12 rounded-2xl
+        text-white font-semibold
+        transition-all hover:scale-[1.02]
+      "
+      style={{
+        background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+      }}
+    >
+      Send Invitation
+    </Button>
+
+  </div>
+</DialogContent>
+
                 </Dialog>
               )}
             </CardHeader>
@@ -563,29 +647,68 @@ export default function Organizations() {
                     </button>
                   </DialogTrigger>
 
-                  <DialogContent className="bg-card border-border">
-                    <DialogHeader>
-                      <DialogTitle>Create Project</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 pt-4">
-                      <Input
-                        placeholder="Project name"
-                        value={newProjectName}
-                        onChange={(e) => setNewProjectName(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && handleCreateProject()}
-                      />
-                      <Button
-                        onClick={handleCreateProject}
-                        className="w-full"
-                        style={{
-                          background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
-                          color: 'white',
-                        }}
-                      >
-                        Create Project
-                      </Button>
-                    </div>
-                  </DialogContent>
+                  <DialogContent
+  className={cn(
+    "max-w-md rounded-3xl backdrop-blur-xl shadow-2xl",
+    isDark
+      ? "bg-white/10 border border-white/20"
+      : "bg-white/80 border border-black/10"
+  )}
+>
+  <DialogHeader className="text-center space-y-2">
+    <DialogTitle
+      className={cn(
+        "text-2xl font-bold",
+        isDark ? "text-white" : "text-foreground"
+      )}
+    >
+      Create Project
+    </DialogTitle>
+
+    <p
+      className={cn(
+        "text-sm",
+        isDark ? "text-white/60" : "text-muted-foreground"
+      )}
+    >
+      Give your project a meaningful name
+    </p>
+  </DialogHeader>
+
+  <div className="space-y-6 pt-6">
+
+    {/* Project Name */}
+    <Input
+      placeholder="Project name"
+      value={newProjectName}
+      onChange={(e) => setNewProjectName(e.target.value)}
+      onKeyDown={(e) => e.key === "Enter" && handleCreateProject()}
+      className={cn(
+        "h-12 rounded-xl",
+        isDark
+          ? "bg-white/5 border-white/20 text-white placeholder:text-white/40"
+          : "bg-white border-black/10 text-black placeholder:text-muted-foreground"
+      )}
+    />
+
+    {/* Button */}
+    <Button
+      onClick={handleCreateProject}
+      className="
+        w-full h-12 rounded-2xl
+        text-white font-semibold
+        transition-all hover:scale-[1.02]
+      "
+      style={{
+        background: `linear-gradient(135deg, ${PRIMARY} 0%, #6B5FC5 100%)`,
+      }}
+    >
+      Create Project
+    </Button>
+
+  </div>
+</DialogContent>
+
                 </Dialog>
               )}
             </CardHeader>
