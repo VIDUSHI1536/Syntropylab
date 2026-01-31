@@ -122,14 +122,14 @@ export default function Auth() {
 
         <div className="relative z-10">
           <h2 className="text-3xl font-semibold tracking-tight"
-            style={{ color: isDark ? '#ffffff' : '#4D456E' }}
+            style={{ color: isDark ? '#ffffff' : '#5f3b96' }}
           >
             Syntropylabs
           </h2>
 
           <p
             className="mt-6 text-4xl font-medium leading-tight"
-            style={{ color: isDark ? '#ffffff' : '#4D456E' }}
+            style={{ color: isDark ? '#ffffff' : '#5f3b96' }}
           >
             Unlock your <br />
             Project <span className="font-extrabold">performance</span>
@@ -196,7 +196,7 @@ export default function Auth() {
               style={{ color: isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.55)' }}
             >
               Sign in to your account to start using{' '}
-              <span className="font-medium" style={{ color: '#4D456E' }}>
+              <span className="font-medium" style={{ color: '#5f3b96' }}>
                 Syntropylabs
               </span>
             </p>
@@ -331,7 +331,7 @@ export default function Auth() {
                   <button
                     type="button"
                     className="text-sm hover:underline"
-                    style={{ color: '#4D456E' }}
+                    style={{ color: '#5f3b96' }}
                   >
                     Forgot Password?
                   </button>
@@ -345,8 +345,8 @@ export default function Auth() {
                 className="w-full mt-2 rounded-lg py-2.5 font-medium text-white transition hover:opacity-95 disabled:opacity-60"
                 style={{
                   background: isDark
-                    ? 'linear-gradient(135deg, #4D456E 0%, #6B5FC5 50%, #4D456E 100%)'
-                    : 'linear-gradient(135deg, #4D456E 0%, #6B5FC5 100%)',
+                    ? 'linear-gradient(135deg, #5f3b96 0%, #6B5FC5 50%, #5f3b96 100%)'
+                    : 'linear-gradient(135deg, #5f3b96 0%, #6B5FC5 100%)',
                 }}
               >
                 {loading ? (
@@ -371,7 +371,7 @@ export default function Auth() {
                   type="button"
                   onClick={() => setIsLogin(!isLogin)}
                   className="hover:underline font-semibold"
-                  style={{ color: '#4D456E' }}
+                  style={{ color: '#5f3b96' }}
                 >
                   {isLogin ? 'SIGN UP' : 'SIGN IN'}
                 </button>
