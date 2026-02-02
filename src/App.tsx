@@ -19,6 +19,8 @@ import Evaluators from "./pages/dashboard/Evaluators";
 import Analytics from "./pages/dashboard/Analytics";
 import NotFound from "./pages/NotFound";
 import Settings from "./pages/dashboard/Settings";
+import ProjectAudio from "./pages/dashboard/ProjectAudio";
+import ProjectAudiofile from "./pages/dashboard/ProjectAudiofile";
 
 const queryClient = new QueryClient();
 
@@ -51,13 +53,13 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard/projects" replace />} />
             <Route path="/auth" element={<Auth />} />
-            <Route 
-              path="/accept-invite" 
+            <Route
+              path="/accept-invite"
               element={
                 <ProtectedRoute>
                   <AcceptInvite />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route
               path="/dashboard"
@@ -80,7 +82,8 @@ const App = () => (
               <Route path="analytics" element={<Analytics />} />
               <Route path="benchmark" element={<Benchmark />} />
               <Route path="/dashboard/settings" element={<Settings />} />
-
+              <Route path="/dashboard/projectaudioplay" element={<ProjectAudio />} />
+              <Route path="/dashboard/projectaudio" element={<ProjectAudiofile />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

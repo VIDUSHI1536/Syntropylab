@@ -23,6 +23,11 @@ import {
   Sun,
   X,
   ExternalLink,
+  FileText,
+  Mic,
+  Image as ImageIcon,
+  Video,
+
 } from 'lucide-react';
 import {
   Tooltip,
@@ -33,8 +38,8 @@ import {
 
 
 const navItems = [
-   {to: '/dashboard/benchmark', icon: BarChart3, label: 'Benchmark' },
-  { to: '/dashboard/projects', icon: FolderKanban, label: 'Projects' },
+  { to: '/dashboard/benchmark', icon: BarChart3, label: 'Benchmark' },
+  { to: '/dashboard/projects', icon: FolderKanban, label: 'Project' },
   // { to: '/dashboard/organizations', icon: Building2, label: 'Organizations' },
   { to: '/dashboard/datasets', icon: Database, label: 'Datasets' },
   { to: '/dashboard/evaluators', icon: FlaskConical, label: 'Evaluator Gallery' },
@@ -100,8 +105,8 @@ export default function DashboardLayout() {
           {(!sidebarCollapsed || variant === 'mobile') && (
             <div className="leading-tight">
               <p className="text-white font-semibold text-base font-grotesk">
-  Syntropylabs
-</p>
+                Syntropylabs
+              </p>
 
               <p className="text-[12px] text-white/60">Workspace</p>
             </div>
@@ -135,42 +140,6 @@ export default function DashboardLayout() {
         )}
       </div>
 
-      {/* Create Project */}
-      {/* <div className={cn('px-4 pt-4', sidebarCollapsed && variant === 'desktop' && 'px-3')}>
-        <button
-          onClick={() => {
-            navigate('/dashboard/projects');
-            setMobileSidebarOpen(false);
-          }}
-          className={cn(
-            'w-full rounded-2xl px-4 py-3 flex items-center gap-3 transition-all hover:scale-[1.01]',
-            sidebarCollapsed && variant === 'desktop' && 'justify-center px-0'
-          )}
-          style={{
-            background:
-              'linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08))',
-            border: '1px solid rgba(255,255,255,0.16)',
-          }}
-        >
-          <div
-            className="h-9 w-9 rounded-xl flex items-center justify-center"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(255,255,255,0.28), rgba(255,255,255,0.10))',
-            }}
-          >
-            <Plus className="w-5 h-5 text-white" />
-          </div>
-
-          {(!sidebarCollapsed || variant === 'mobile') && (
-            <div className="text-left">
-              <p className="text-white font-semibold text-sm">Create Project</p>
-              <p className="text-white/60 text-xs">Start something new</p>
-            </div>
-          )}
-        </button>
-      </div> */}
-
       {/* NAV */}
       <nav
         className={cn(
@@ -179,62 +148,138 @@ export default function DashboardLayout() {
         )}
       >
         {navItems.map((item) => {
-          const isActive = location.pathname.startsWith(item.to);
+          const isProjects = item.to === "/dashboard/projects";
+          const isActive =
+            item.to === "/dashboard/projects"
+              ? location.pathname.startsWith("/dashboard/projects")
+              : location.pathname.startsWith(item.to);
 
+
+          if (isProjects) {
+            return (
+              <div key="projects" className="space-y-1">
+                {/* PROJECTS BUTTON */}
+                <button
+                  onClick={() => setProjectsOpen((p) => !p)}
+                  className={cn(
+                    "relative w-full flex items-center justify-between  gap-3 px-4 py-3 rounded-2xl text-sm transition-all",
+                    sidebarCollapsed && variant === "desktop" && "justify-center px-0",
+                    isActive ? "text-white" : "text-white/75 hover:text-white"
+                  )}
+                  style={{
+                    background: isActive
+                      ? "linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10))"
+                      : "transparent",
+                    border: isActive
+                      ? "1px solid rgba(255,255,255,0.16)"
+                      : "1px solid transparent",
+                  }}
+                >
+                  <div className='flex items-center gap-3'>
+                    <FolderKanban className="w-5 h-5" />
+                    {(!sidebarCollapsed || variant === "mobile") &&
+                      <span className="flex-1 font-medium">Projects</span>}
+                  </div>
+                  {(!sidebarCollapsed || variant === "mobile") && (
+                    <>
+                      <ChevronDown
+                        className={cn(
+                          "w-4 h-4 transition-transform",
+                          projectsOpen && "rotate-180"
+                        )}
+                      />
+                    </>
+                  )}
+                </button>
+
+                {/* PROJECT CATEGORIES */}
+                <div
+                  className={cn(
+                    "overflow-hidden  transition-all duration-300 ease-out",
+                    projectsOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                  )}
+                >
+                  <div className="mt-1 ml-3 space-y-1 ">
+                    <ProjectItem
+                      to="/dashboard/projects"
+                      icon={FileText}
+                      label="Text"
+
+                      sidebarCollapsed={sidebarCollapsed}
+                      variant={variant}
+                    />
+                    <ProjectItem
+                      to="/dashboard/projectaudioplay"
+                      icon={Mic}
+                      label="Audio"
+                      sidebarCollapsed={sidebarCollapsed}
+                      variant={variant}
+                    />
+                    <ProjectItem
+                      to="/dashboard/projects/image"
+                      icon={ImageIcon}
+                      label="Image"
+                      sidebarCollapsed={sidebarCollapsed}
+                      variant={variant}
+                    />
+                    <ProjectItem
+                      to="/dashboard/projects/video"
+                      icon={Video}
+                      label="Video"
+                      sidebarCollapsed={sidebarCollapsed}
+                      variant={variant}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          /* DEFAULT NAV ITEMS */
           return (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={() => setMobileSidebarOpen(false)}
               className={cn(
-                'relative flex items-center gap-3 px-4 py-3 rounded-2xl text-sm transition-all',
-                sidebarCollapsed && variant === 'desktop' && 'justify-center px-0',
-                isActive ? 'text-white' : 'text-white/75 hover:text-white'
+                "relative flex items-center gap-3 px-4 py-3 rounded-2xl text-sm transition-all",
+                sidebarCollapsed && variant === "desktop" && "justify-center px-0",
+                isActive ? "text-white" : "text-white/75 hover:text-white"
               )}
               style={{
                 background: isActive
-                  ? 'linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10))'
-                  : 'transparent',
+                  ? "linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10))"
+                  : "transparent",
                 border: isActive
-                  ? '1px solid rgba(255,255,255,0.16)'
-                  : '1px solid transparent',
+                  ? "1px solid rgba(255,255,255,0.16)"
+                  : "1px solid transparent",
               }}
             >
-              {isActive && (
-                <span
-                  className="absolute left-0 top-1/2 -translate-y-1/2 h-8 w-1 rounded-full"
-                  style={{
-                    background: 'linear-gradient(180deg, #ffffff, rgba(255,255,255,0.3))',
-                    boxShadow: '0 0 18px rgba(255,255,255,0.35)',
-                  }}
-                />
-              )}
-
-              <item.icon className={cn('w-5 h-5', isActive ? 'text-white' : 'text-white/80')} />
-              {(!sidebarCollapsed || variant === 'mobile') && (
-                <span className="font-medium font-sans">{item.label}</span>
-
+              <item.icon className="w-5 h-5" />
+              {(!sidebarCollapsed || variant === "mobile") && (
+                <span className="font-medium">{item.label}</span>
               )}
             </NavLink>
           );
         })}
+
       </nav>
 
       {/* Bottom */}
       <div className="p-4 space-y-2" style={{ borderTop: '1px solid rgba(255,255,255,0.10)' }}>
         <NavLink
-  to="/dashboard/documentation"
-  onClick={() => setMobileSidebarOpen(false)}
-  className={cn(
-    'flex items-center gap-3 px-4 py-3 rounded-2xl text-sm transition-all hover:bg-white/10',
-    sidebarCollapsed && variant === 'desktop' && 'justify-center px-0'
-  )}
->
-  <ExternalLink className="w-5 h-5 text-white/80" />
-  {(!sidebarCollapsed || variant === 'mobile') && (
-    <span className="text-white/80">Documentation</span>
-  )}
-</NavLink>
+          to="/dashboard/documentation"
+          onClick={() => setMobileSidebarOpen(false)}
+          className={cn(
+            'flex items-center gap-3 px-4 py-3 rounded-2xl text-sm transition-all hover:bg-white/10',
+            sidebarCollapsed && variant === 'desktop' && 'justify-center px-0'
+          )}
+        >
+          <ExternalLink className="w-5 h-5 text-white/80" />
+          {(!sidebarCollapsed || variant === 'mobile') && (
+            <span className="text-white/80">Documentation</span>
+          )}
+        </NavLink>
 
         <NavLink
           to="/dashboard/settings"
@@ -259,13 +304,13 @@ export default function DashboardLayout() {
               sidebarCollapsed && variant === 'desktop' && 'justify-center px-0'
             )}
           >
-         <div className="relative">
-  <div
-    className="h-11 w-11 rounded-full flex items-center justify-center bg-gradient-to-br from-[#6B5FC5] to-[#4D456E]"
-  >
-    <User className="w-5 h-5 text-white" />
-  </div>
-</div>
+            <div className="relative">
+              <div
+                className="h-11 w-11 rounded-full flex items-center justify-center bg-gradient-to-br from-[#6B5FC5] to-[#4D456E]"
+              >
+                <User className="w-5 h-5 text-white" />
+              </div>
+            </div>
 
 
 
@@ -273,25 +318,25 @@ export default function DashboardLayout() {
             {(!sidebarCollapsed || variant === 'mobile') && (
               <>
                 <div className="flex-1 min-w-0 text-left">
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <p className="text-sm font-semibold text-white truncate cursor-default">
-          {user?.email || 'user@example.com'}
-        </p>
-      </TooltipTrigger>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <p className="text-sm font-semibold text-white truncate cursor-default">
+                          {user?.email || 'user@example.com'}
+                        </p>
+                      </TooltipTrigger>
 
-      <TooltipContent
-        side="top"
-        className="bg-black/80 text-white text-xs px-3 py-1 rounded-md"
-      >
-        {user?.email || 'user@example.com'}
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
+                      <TooltipContent
+                        side="top"
+                        className="bg-black/80 text-white text-xs px-3 py-1 rounded-md"
+                      >
+                        {user?.email || 'user@example.com'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
 
-  <p className="text-xs text-white/60">Account</p>
-</div>
+                  <p className="text-xs text-white/60">Account</p>
+                </div>
 
 
                 <ChevronDown
@@ -319,7 +364,7 @@ export default function DashboardLayout() {
                 backdropFilter: 'blur(16px)',
               }}
             >
-              
+
               <button
                 onClick={() => navigate("/dashboard/organizations")}
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-white/85 hover:bg-white/10 transition"
@@ -351,7 +396,7 @@ export default function DashboardLayout() {
       className="min-h-screen flex transition-colors duration-500"
       style={{
         background: isDark
-              ? 'linear-gradient(135deg, #2a1b40 0%, #141124 35%, #0b0a12 100%)'
+          ? 'linear-gradient(135deg, #2a1b40 0%, #141124 35%, #0b0a12 100%)'
           : 'linear-gradient(135deg, #ffffff 0%, #f6f4ff 40%, #ffffff 100%)',
       }}
     >
@@ -404,13 +449,13 @@ export default function DashboardLayout() {
             </button>
 
             <p
-  className={cn(
-    'text-lg font-semibold font-grotesk',
-    isDark ? 'text-white' : 'text-[#1f1b2e]'
-  )}
->
-  Dashboard
-</p>
+              className={cn(
+                'text-lg font-semibold font-grotesk',
+                isDark ? 'text-white' : 'text-[#1f1b2e]'
+              )}
+            >
+              Dashboard
+            </p>
 
           </div>
 
@@ -435,5 +480,45 @@ export default function DashboardLayout() {
         </div>
       </main>
     </div>
+  );
+}
+function ProjectItem({
+  to,
+  icon: Icon,
+  label,
+  sidebarCollapsed,
+  variant,
+}: {
+  to: string;
+  icon: any;
+  label: string;
+  sidebarCollapsed: boolean;
+  variant: "desktop" | "mobile";
+}) {
+  const location = useLocation();
+  const isActive = location.pathname.startsWith(to);
+
+  return (
+    <NavLink
+      to={to}
+      className={cn(
+        "flex items-center gap-3 px-4 py-2 rounded-xl text-sm transition-all",
+        sidebarCollapsed && variant === "desktop" && "justify-center px-0",
+        isActive
+          ? "text-white"
+          : "text-white/60 hover:text-white"
+      )}
+      style={{
+        background: isActive
+          ? "linear-gradient(135deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08))"
+          : "transparent",
+      }}
+    >
+      <Icon className="w-4 h-4" />
+
+      {(!sidebarCollapsed || variant === "mobile") && (
+        <span>{label}</span>
+      )}
+    </NavLink>
   );
 }

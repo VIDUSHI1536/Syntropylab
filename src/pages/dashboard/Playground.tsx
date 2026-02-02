@@ -1,266 +1,418 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams, useLocation } from "react-router-dom";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Link2,
   ChevronRight,
-  Split,
+  Paperclip,
+  Code2,
+  Send,
 } from "lucide-react";
 
+import { cn } from "@/lib/utils";
+import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
+  SelectTrigger,
   SelectContent,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useTheme } from "@/hooks/useTheme";
-import { useLocation, useParams } from "react-router-dom";
 
 const PRIMARY = "#5f3b96";
+const MODELS = [
+  { id: "gpt-4", name: "GPT-4", tag: "text" },
+  { id: "gpt-3.5", name: "GPT-3.5", tag: "text" },
+  { id: "claude", name: "Claude", tag: "text" },
+  { id: "gemini-pro", name: "Gemini 3 Pro", tag: "text" },
+  { id: "grok", name: "Grok 4.1 Thinking", tag: "text" },
+];
 
-/* -----------------------------------
- Prompt Card
------------------------------------- */
-function PromptCard({ label }: { label?: "A" | "B" }) {
+export default function Playground() {
   const { isDark } = useTheme();
 
-  return (
-    <div
-      className={cn(
-        "rounded-2xl border p-5 space-y-5",
-        isDark
-          ? "bg-[#14121f] border-white/10 text-white"
-          : "bg-white border-black/10"
-      )}
-    >
-      <div className="flex items-center gap-2">
-        {label && (
-          <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center font-semibold text-primary">
-            {label}
-          </div>
-        )}
-        <h3 className="font-semibold">Prompt</h3>
-      </div>
+  const [mode, setMode] = useState<"pointwise" | "side">("pointwise");
 
-      <Select>
-        <SelectTrigger
-          className={cn(isDark && "bg-white/5 border-white/10")}
-        >
-          <SelectValue placeholder="Select or search model" />
-        </SelectTrigger>
-        <SelectContent
-          className={cn(isDark && "bg-[#1a1625] border-white/10")}
-        >
-          <SelectItem value="gpt4">GPT-4</SelectItem>
-          <SelectItem value="gpt35">GPT-3.5</SelectItem>
-          <SelectItem value="claude">Claude</SelectItem>
-        </SelectContent>
-      </Select>
+  const [model, setModel] = useState("gpt-4");
+  const [modelA, setModelA] = useState("gpt-4");
+  const [modelB, setModelB] = useState("claude");
 
-      <div>
-        <p className="text-sm mb-1">System Instructions</p>
-        <Textarea
-          placeholder="Enter optional system instructions"
-          className={cn(
-            "min-h-[90px]",
-            isDark && "bg-white/5 border-white/10"
-          )}
-        />
-      </div>
-
-      <div>
-        <p className="text-sm mb-1">User Input</p>
-        <Textarea
-          placeholder="Enter user input"
-          className={cn(
-            "min-h-[120px]",
-            isDark && "bg-white/5 border-white/10"
-          )}
-        />
-      </div>
-
-      <div className="flex justify-end">
-        <Button
-          style={{
-            background: `linear-gradient(135deg, ${PRIMARY}, #818CF8)`,
-          }}
-        >
-          Generate Output
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-/* -----------------------------------
- Output Card
------------------------------------- */
-function OutputCard({ label }: { label?: "A" | "B" }) {
-  const { isDark } = useTheme();
-
-  return (
-    <div
-      className={cn(
-        "rounded-2xl border p-5 min-h-[160px]",
-        isDark
-          ? "bg-[#14121f] border-white/10 text-white"
-          : "bg-white border-black/10"
-      )}
-    >
-      <div className="flex items-center gap-2 mb-2">
-        {label && (
-          <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center font-semibold text-primary">
-            {label}
-          </div>
-        )}
-        <h3 className="font-semibold">Output</h3>
-      </div>
-
-      <p className={cn("text-sm", isDark && "text-white/60")}>
-        Model output will appear here.
-      </p>
-    </div>
-  );
-}
-
-/* -----------------------------------
- MAIN PAGE
------------------------------------- */
-export default function PlaygroundCompare(props: { projectId: string, projectName: string }) {
-  const { isDark } = useTheme();
-  const [sideBySide, setSideBySide] = useState(false);
   const { projectId } = useParams();
   const location = useLocation();
-
-  const projectName =
-    location.state?.projectName || "Project";
-
+  const projectName = location.state?.projectName || "Project";
+  const [modelSearch, setModelSearch] = useState("");
+  const [modelTab, setModelTab] = useState<"text" | "code" | "search">("text");
+  const [systemPrompt, setSystemPrompt] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="relative min-h-screen overflow-hidden">
+      <input
+        type="file"
+        id="fileUpload"
+        className="hidden"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+      />
 
-      {/* HEADER / BREADCRUMB */}
-      <div className="flex items-center justify-between">
+      {/* Glow Background */}
+      {isDark && (
+        <>
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-[#5f3b96]/30 blur-[140px] rounded-full" />
+          <div className="absolute top-1/3 right-[-300px] w-[700px] h-[700px] bg-[#6B5FC5]/25 blur-[160px] rounded-full" />
+        </>
+      )}
 
-        <div className="flex items-center gap-2 text-sm">
-
-          <Link
-            to="/dashboard/projects"
-            className={cn(
-              "transition-colors",
-              isDark
-                ? "text-white/60 hover:text-white"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            Evaluation Projects
-          </Link>
-
-          <ChevronRight
-            className={cn(
-              "w-4 h-4",
-              isDark ? "text-white/40" : "text-muted-foreground"
-            )}
-          />
-
-          <Link
-            to={`/dashboard/projects/${projectId}`}
-            className={cn(
-              isDark
-                ? "text-white/60 hover:text-white"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {projectName}
-          </Link>
-
-
-          <ChevronRight
-            className={cn(
-              "w-4 h-4",
-              isDark ? "text-white/40" : "text-muted-foreground"
-            )}
-          />
-
-          <span
-            className={cn(
-              "font-semibold",
-              isDark ? "text-white" : "text-foreground"
-            )}
-          >
-            Playground
-          </span>
-
-        </div>
-
-        {/* TOGGLE */}
-        <Button
-          variant="outline"
-          className="gap-2"
-          onClick={() => setSideBySide((p) => !p)}
-        >
-          <Split className="w-4 h-4" />
-          {sideBySide
-            ? "Pointwise Evaluation"
-            : "Side-by-Side Comparison"}
-        </Button>
-      </div>
-
-      {/* PROMPTS */}
+      {/* Main */}
       <div
         className={cn(
-          "grid gap-6",
-          sideBySide ? "md:grid-cols-2" : "grid-cols-1"
+          "relative z-10 min-h-screen flex flex-col backdrop-blur-[2px]",
+          isDark ? "bg-[#0b0713] text-white" : "bg-background"
         )}
       >
-        <PromptCard label={sideBySide ? "A" : undefined} />
-        {sideBySide && <PromptCard label="B" />}
-      </div>
 
-      {/* OUTPUTS */}
-      <div
-        className={cn(
-          "grid gap-6",
-          sideBySide ? "md:grid-cols-2" : "grid-cols-1"
-        )}
-      >
-        <OutputCard label={sideBySide ? "A" : undefined} />
-        {sideBySide && <OutputCard label="B" />}
-      </div>
+        {/* AI BG IMAGE */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-15"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10))"
+          }}
+        />
 
-      {/* COMPARISON */}
-      {sideBySide && (
+        {/* HEADER */}
         <div
           className={cn(
-            "rounded-2xl border p-4 flex flex-wrap justify-between gap-3",
+            "sticky top-0 z-20",
             isDark
-              ? "bg-[#14121f] border-white/10"
-              : "bg-white border-black/10"
+              ? "bg-[#0b0713]/70 backdrop-blur-xl border-b border-white/10"
+              : "bg-background/70 backdrop-blur-xl border-b"
           )}
         >
-          <Button variant="outline" className="gap-2">
-            <ArrowLeft className="w-4 h-4" />
-            Left is better
-          </Button>
+          <div className="flex items-center justify-between px-6 h-14">
 
-          <Button variant="outline" className="gap-2">
-            <Link2 className="w-4 h-4" />
-            It’s a tie
-          </Button>
+            {/* LEFT */}
+            <div className="flex items-center gap-3 text-sm">
+              <Link
+                to="/dashboard/projects"
+                className={cn(
+                  isDark
+                    ? "text-white/60 hover:text-white"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Projects
+              </Link>
 
-          <Button variant="outline">Both are bad</Button>
+              <ChevronRight className="w-4 h-4 opacity-40" />
 
-          <Button variant="outline" className="gap-2">
-            Right is better
-            <ArrowRight className="w-4 h-4" />
-          </Button>
+              <Link
+                to={`/dashboard/projects/${projectId}`}
+                className={cn(
+                  isDark
+                    ? "text-white/60 hover:text-white"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {projectName}
+              </Link>
+
+              <ChevronRight className="w-4 h-4 opacity-40" />
+
+              <span className="font-semibold tracking-wide bg-gradient-to-r from-[#6B5FC5] to-[#9b7cff] bg-clip-text text-transparent">
+                Playground
+              </span>
+            </div>
+
+            {/* RIGHT */}
+            <div className="flex items-center gap-3">
+
+              {/* MODE */}
+              <Select value={mode} onValueChange={(v) => setMode(v as any)}>
+                <SelectTrigger
+                  className="
+                      h-9 w-[220px]
+                      bg-white/5 border-white/10 text-white
+                      flex items-center gap-3 px-3
+                      transition-all
+                      hover:border-[#6B5FC5]/60
+                      hover:shadow-[0_0_0_1px_rgba(107,95,197,0.5)]
+                    "
+                >
+                  {mode === "pointwise" ? (
+                    <Send className="w-4 h-4 opacity-80" />
+                  ) : (
+                    <Code2 className="w-4 h-4 opacity-80" />
+                  )}
+
+                  <div className="flex flex-col leading-tight text-left">
+                    <span className="text-sm font-medium">
+                      {mode === "pointwise" ? "Pointwise Evaluation" : "Side by Side"}
+                    </span>
+
+                  </div>
+                </SelectTrigger>
+
+                <SelectContent className="bg-[#140c22] border-white/10 animate-dropdown p-2 w-[260px]">
+                  <SelectItem value="pointwise" className="rounded-lg p-3 focus:bg-white/10">
+                    <div className="flex gap-3">
+                      <Send className="w-4 h-4 mt-1 opacity-70" />
+                      <div>
+                        <p className="font-medium">Pointwise Evalution</p>
+                        <p className="text-xs text-white/60">
+                          Chat with one model at a time
+                        </p>
+                      </div>
+                    </div>
+                  </SelectItem>
+
+                  <SelectItem value="side" className="rounded-lg p-3 focus:bg-white/10">
+                    <div className="flex gap-3">
+                      <Code2 className="w-4 h-4 mt-1 opacity-70" />
+                      <div>
+                        <p className="font-medium">Side by Side</p>
+                        <p className="text-xs text-white/60">
+                          Compare two models of your choice
+                        </p>
+                      </div>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* MODEL */}
+              {mode === "pointwise" && (
+                <Select value={model} onValueChange={setModel}>
+                  <SelectTrigger className="h-9 w-[180px] bg-white/5 border-white/10 text-white">
+                    {MODELS.find(m => m.id === model)?.name}
+                  </SelectTrigger>
+
+                  <SelectContent className="bg-[#140c22] border-white/10 w-[320px] p-2 animate-dropdown">
+
+                    {/* Search */}
+                    <input
+                      placeholder="Search models"
+                      value={modelSearch}
+                      onChange={(e) => setModelSearch(e.target.value)}
+                      className="w-full mb-2 px-3 py-2 rounded-lg bg-white/5 outline-none text-sm"
+                    />
+
+                    {/* Tabs */}
+                    <input
+                      placeholder="System instruction..."
+                      value={systemPrompt}
+                      onChange={(e) => setSystemPrompt(e.target.value)}
+                      className="
+      w-full mb-2
+      px-3 py-2 rounded-lg
+      bg-white/5 border border-white/10
+      text-sm outline-none
+      placeholder:text-white/40
+    "
+                    />
+
+
+                    {/* Models */}
+                    <div className="max-h-[260px] overflow-y-auto">
+                      {MODELS.filter(
+                        m =>
+                          m.tag === modelTab &&
+                          m.name.toLowerCase().includes(modelSearch.toLowerCase())
+                      ).map((m) => (
+                        <SelectItem
+                          key={m.id}
+                          value={m.id}
+                          className="flex justify-between rounded-md p-2"
+                        >
+                          {m.name}
+                          {model === m.id}
+                        </SelectItem>
+                      ))}
+                    </div>
+
+                  </SelectContent>
+                </Select>
+
+              )}
+
+              {mode === "side" && (
+                <>
+                  <Select value={modelA} onValueChange={setModelA}>
+                    <SelectTrigger className="h-9 w-[180px] bg-white/5 border-white/10 text-white">
+                      {MODELS.find(m => m.id === model)?.name}
+                    </SelectTrigger>
+
+                    <SelectContent className="bg-[#140c22] border-white/10 w-[320px] p-2 animate-dropdown">
+
+                      {/* Search */}
+                      <input
+                        placeholder="Search models"
+                        value={modelSearch}
+                        onChange={(e) => setModelSearch(e.target.value)}
+                        className="w-full mb-2 px-3 py-2 rounded-lg bg-white/5 outline-none text-sm"
+                      />
+
+                      {/* Tabs */}
+                      <input
+                        placeholder="System instruction..."
+                        value={systemPrompt}
+                        onChange={(e) => setSystemPrompt(e.target.value)}
+                        className="
+      w-full mb-2
+      px-3 py-2 rounded-lg
+      bg-white/5 border border-white/10
+      text-sm outline-none
+      placeholder:text-white/40
+    "
+                      />
+
+
+                      {/* Models */}
+                      <div className="max-h-[260px] overflow-y-auto">
+                        {MODELS.filter(
+                          m =>
+                            m.tag === modelTab &&
+                            m.name.toLowerCase().includes(modelSearch.toLowerCase())
+                        ).map((m) => (
+                          <SelectItem
+                            key={m.id}
+                            value={m.id}
+                            className="flex justify-between rounded-md p-2"
+                          >
+                            {m.name}
+                            {model === m.id}
+                          </SelectItem>
+                        ))}
+                      </div>
+
+                    </SelectContent>
+                  </Select>
+
+                  <Select value={modelB} onValueChange={setModelB}>
+                    <SelectTrigger className="h-9 w-[180px] bg-white/5 border-white/10 text-white">
+                      {MODELS.find(m => m.id === model)?.name}
+                    </SelectTrigger>
+
+                    <SelectContent className="bg-[#140c22] border-white/10 w-[320px] p-2 animate-dropdown">
+
+                      {/* Search */}
+                      <input
+                        placeholder="Search models"
+                        value={modelSearch}
+                        onChange={(e) => setModelSearch(e.target.value)}
+                        className="w-full mb-2 px-3 py-2 rounded-lg bg-white/5 outline-none text-sm"
+                      />
+
+                      {/* Tabs */}
+                      <input
+                        placeholder="System instruction..."
+                        value={systemPrompt}
+                        onChange={(e) => setSystemPrompt(e.target.value)}
+                        className="
+      w-full mb-2
+      px-3 py-2 rounded-lg
+      bg-white/5 border border-white/10
+      text-sm outline-none
+      placeholder:text-white/40
+    "
+                      />
+
+
+                      {/* Models */}
+                      <div className="max-h-[260px] overflow-y-auto">
+                        {MODELS.filter(
+                          m =>
+                            m.tag === modelTab &&
+                            m.name.toLowerCase().includes(modelSearch.toLowerCase())
+                        ).map((m) => (
+                          <SelectItem
+                            key={m.id}
+                            value={m.id}
+                            className="flex justify-between rounded-md p-2"
+                          >
+                            {m.name}
+                            {model === m.id}
+                          </SelectItem>
+                        ))}
+                      </div>
+
+                    </SelectContent>
+                  </Select>
+
+                </>
+              )}
+
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* CENTER */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 text-center space-y-8">
+          <h1 className="text-4xl md:text-5xl font-semibold mb-10 bg-gradient-to-r from-white via-[#bda7ff] to-[#7b6cff] bg-clip-text text-transparent">
+            What would you like to do?
+          </h1>
+
+          <div className="w-full max-w-3xl px-4">
+            <div
+              className={cn(
+                "flex items-center gap-3 rounded-2xl px-5 py-4 border backdrop-blur-xl",
+                isDark ? "bg-white/5 border-white/10" : "bg-white border-border"
+              )}
+            >
+
+              {/* PLUS / UPLOAD */}
+              <button
+                onClick={() => document.getElementById("fileUpload")?.click()}
+                className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center transition border border-transparent text-2xl",
+                  isDark ? "hover:bg-white/10" : "hover:bg-black/5"
+                )}
+              >
+                +
+              </button>
+
+              {/* FILE PREVIEW */}
+              {file && (
+                <div
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-1 rounded-lg text-xs",
+                    isDark ? "bg-white/10" : "bg-muted"
+                  )}
+                >
+                  <span className="max-w-[120px] truncate">{file.name}</span>
+                  <button onClick={() => setFile(null)}>✕</button>
+                </div>
+              )}
+
+              {/* TEXTAREA */}
+              <Textarea
+                placeholder="Ask anything..."
+                className={cn(
+                  "flex-1 resize-none min-h-[60px]",
+                  "bg-transparent border-none",
+                  "outline-none ring-0 focus:ring-0",
+                  "focus:outline-none focus-visible:outline-none focus-visible:ring-0",
+                  isDark
+                    ? "text-white placeholder:text-white/50"
+                    : "text-foreground placeholder:text-muted-foreground"
+                )}
+              />
+
+
+              {/* SEND */}
+              <Button
+                className="h-10 w-10 rounded-xl text-white"
+                style={{
+                  background: `linear-gradient(135deg, ${PRIMARY}, #6B5FC5)`
+                }}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
+    // </div>
   );
 }
