@@ -11,6 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { api, Organization, Project } from "@/lib/api";
 import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import {
     KeyRound,
     Layers,
     Save,
@@ -20,10 +27,22 @@ import {
     AlertCircle,
     FolderKanban,
 } from "lucide-react";
+import ModelManager from "./ModelManager";
 
 const PRIMARY = "#5f3b96";
 
 export default function Settings() {
+    const [systemModels, setSystemModels] = useState<string[]>([]);
+    const [loadingModels, setLoadingModels] = useState(false);
+
+    // custom models
+    const [customModels, setCustomModels] = useState<string[]>([]);
+    const [customModelName, setCustomModelName] = useState("");
+    const [customProvider, setCustomProvider] = useState("");
+    const [customDialogOpen, setCustomDialogOpen] = useState(false);
+
+    const [availableModels, setAvailableModels] = useState<string[]>([]);
+    const [selectedModel, setSelectedModel] = useState<string>("");
     const { isDark } = useTheme();
     const { toast } = useToast();
     const { projectId: routeProjectId } = useParams();
@@ -135,6 +154,48 @@ export default function Settings() {
             setUpdatingKey(null);
         }
     };
+    useEffect(() => {
+        const loadModels = async () => {
+            try {
+                setLoadingModels(true);
+
+                const modelsResponse = await api.getModels();
+
+                let modelList: string[] = [];
+
+                if (Array.isArray(modelsResponse)) {
+                    modelList = modelsResponse;
+                } else if (modelsResponse?.data) {
+                    modelList = modelsResponse.data.flatMap(
+                        (p: any) => p.models || []
+                    );
+                }
+
+                console.log("MODELS:", modelList);
+
+                setSystemModels(modelList);
+
+
+                if (modelList.length && !selectedModel) {
+                    setSelectedModel(modelList[0]);
+                }
+            } catch (e) {
+                console.error("Failed to fetch models:", e);
+
+                setAvailableModels([
+                    "gpt-4",
+                    "gpt-4o",
+                    "gpt-3.5-turbo",
+                    "claude-3-opus-20240229",
+                    "claude-3-sonnet-20240229"
+                ]);
+            } finally {
+                setLoadingModels(false);
+            }
+        };
+
+        loadModels();
+    }, [activeTab]);
 
     // Show loading state for initial org fetch
     if (loadingOrgs) {
@@ -403,32 +464,180 @@ export default function Settings() {
 
             {/* MODEL MANAGER TAB */}
             {activeTab === "models" && (
-                <Card
-                    className={cn(
-                        "rounded-3xl border p-12 text-center",
-                        isDark ? 'bg-white/5 border-white/10' : 'bg-white border-black/10'
-                    )}
-                    style={{
-                        background: isDark
-                            ? 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03))'
-                            : 'linear-gradient(180deg, #ffffff, #f6f4ff)',
-                    }}
-                >
-                    <Layers className="w-10 h-10 mx-auto mb-4" style={{ color: PRIMARY }} />
-                    <h3 className={cn(
-                        "text-lg font-semibold",
-                        isDark ? 'text-white' : 'text-foreground'
-                    )}>
-                        Model Manager
-                    </h3>
-                    <p className={cn(
-                        "mt-2",
-                        isDark ? 'text-white/60' : 'text-muted-foreground'
-                    )}>
-                        Configure and manage your available models here.
-                    </p>
-                </Card>
+                <div className="space-y-10 animate-fade-in">
+
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+
+                        <div>
+                            <h2
+                                className={cn(
+                                    "text-2xl font-semibold",
+                                    isDark ? "text-white" : "text-foreground"
+                                )}
+                            >
+                                Model Manager
+                            </h2>
+
+                            <p
+                                className={cn(
+                                    "text-sm mt-1",
+                                    isDark ? "text-white/60" : "text-muted-foreground"
+                                )}
+                            >
+                                Manage system and custom models
+                            </p>
+                        </div>
+
+                        {/* Add Custom Model */}
+                        <Dialog open={customDialogOpen} onOpenChange={setCustomDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button
+                                    className="rounded-xl text-white"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${PRIMARY}, #6B5FC5)`,
+
+                                    }}
+                                >
+                                    + Add custom model
+                                </Button>
+                            </DialogTrigger>
+
+                            <DialogContent
+                                className={cn(
+                                    "rounded-2xl",
+                                    isDark
+                                        ? "bg-[#140c22] border-white/10 text-white"
+                                        : "bg-white"
+                                )}
+                            >
+                                <DialogHeader>
+                                    <DialogTitle>Add Custom Model</DialogTitle>
+                                </DialogHeader>
+
+                                <div className="space-y-4">
+
+                                    <Input
+                                        placeholder="Model nickname"
+                                        value={customModelName}
+                                        onChange={(e) => setCustomModelName(e.target.value)}
+                                    />
+
+                                    <Input
+                                        placeholder="Provider (OpenAI, Anthropic...)"
+                                        value={customProvider}
+                                        onChange={(e) => setCustomProvider(e.target.value)}
+                                    />
+
+                                    <Button
+                                        className="w-full text-white"
+                                        style={{
+                                            background: `linear-gradient(135deg, ${PRIMARY}, #6B5FC5)`
+                                        }}
+                                        onClick={() => {
+                                            if (!customModelName) return;
+
+                                            setCustomModels((prev) => [
+                                                ...prev,
+                                                `${customModelName} (${customProvider})`,
+                                            ]);
+
+                                            setCustomModelName("");
+                                            setCustomProvider("");
+                                            setCustomDialogOpen(false);
+
+                                            toast({ title: "Custom model added" });
+                                        }}
+                                    >
+                                        Save Model
+                                    </Button>
+
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+
+                    {/* ================= CUSTOM MODELS ================= */}
+
+                    <div
+                        className={cn(
+                            "rounded-3xl p-6 border",
+                            isDark ? "bg-white/5 border-white/10" : "bg-white border-black/10"
+                        )}
+                    >
+                        <h3 className="font-semibold mb-4"
+                            style={{ color: isDark ? '#fff' : '#1f1b2e' }}>Custom Models</h3>
+
+                        {customModels.length === 0 ? (
+                            <p className={cn(
+                                "text-sm",
+                                isDark ? "text-white/50" : "text-muted-foreground"
+                            )}>
+                                No custom models yet
+                            </p>
+                        ) : (
+                            <div className="flex flex-wrap gap-3">
+                                {customModels.map((m) => (
+                                    <ModelChip key={m} name={m} />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* ================= SYSTEM MODELS ================= */}
+
+                    <div
+                        className={cn(
+                            "rounded-3xl p-6 border",
+                            isDark ? "bg-white/5 border-white/10" : "bg-white border-black/10"
+                        )}
+                    >
+                        <h3 className="font-semibold mb-4" style={{ color: isDark ? '#fff' : '#1f1b2e' }}>System Models</h3>
+
+                        {loadingModels ? (
+                            <div className="flex items-center gap-2">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                Loading models...
+                            </div>
+                        ) : systemModels.length === 0 ? (
+                            <p className={cn(
+                                "text-sm",
+                                isDark ? "text-white/50" : "text-muted-foreground"
+                            )}>
+                                No system models available
+                            </p>
+                        ) : (
+                            <div className="flex flex-wrap gap-3">
+                                {systemModels.map((model) => (
+                                    <ModelChip key={model} name={model} />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                </div>
             )}
+        </div>
+    )
+}
+function ModelChip({ name }: { name: string }) {
+    const { isDark } = useTheme();
+
+    return (
+        <div
+            className={cn(
+                "px-4 py-2 rounded-full border text-sm flex items-center gap-2 transition",
+                isDark
+                    ? "bg-white/5 border-white/10 text-white hover:bg-white/10"
+                    : "bg-slate-50 border-black/10 hover:bg-slate-100"
+            )}
+        >
+            {name}
+
+            <button className="opacity-60 hover:opacity-100">
+                ⋮
+            </button>
         </div>
     );
 }
+

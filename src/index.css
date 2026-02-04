@@ -15,7 +15,7 @@
 }
 
 body {
-  font-family: var(--font-sans);
+  font-family: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .backdrop-blur-xl {
@@ -106,10 +106,10 @@ textarea:focus-visible {
     @apply border-border;
   }
 
-  body {
+  /* body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Google Sans', 'Roboto', 'Inter', sans-serif;
-  }
+  } */
 }
 
 @layer utilities {

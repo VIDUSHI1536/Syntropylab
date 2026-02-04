@@ -78,7 +78,7 @@ class ApiClient {
     return response.json();
   }
 
-  
+
   async register(data: { email: string; password: string; firstName: string; lastName: string }) {
     return this.request<User>('/auth/register', {
       method: 'POST',
@@ -108,7 +108,7 @@ class ApiClient {
     });
   }
 
-  
+
   async getOrganizations() {
     return this.request<Organization[]>('/orgs');
   }
@@ -138,7 +138,7 @@ class ApiClient {
     });
   }
 
-  
+
   async getProjects(orgId: string) {
     return this.request<Project[]>(`/orgs/${orgId}/projects`);
   }
@@ -160,7 +160,7 @@ class ApiClient {
     });
   }
 
-  
+
   async getApiKeysStatus(projectId: string) {
     return this.request<ApiKeyStatus>(`/llm/projects/${projectId}/api-keys`);
   }
@@ -178,7 +178,7 @@ class ApiClient {
     });
   }
 
-  
+
   async getModels() {
     return this.request<string[]>('/llm/models');
   }
@@ -219,11 +219,11 @@ class ApiClient {
     onDone();
   }
 
-  
+
   async uploadDataset(
-    file: File, 
-    projectId: string, 
-    name: string, 
+    file: File,
+    projectId: string,
+    name: string,
     inputColumn: string,
     targetColumn: string,
     description?: string
@@ -292,7 +292,7 @@ class ApiClient {
     });
   }
 
-  
+
   async getEvaluationJobsByProject(projectId: string) {
     return this.request<any[]>(`/evaluation-jobs/project/${projectId}`);
   }
@@ -316,7 +316,7 @@ class ApiClient {
     return this.request<any[]>(`/evaluation-jobs/${jobId}/results`);
   }
 
-  
+
   async getGlobalEvaluationRules() {
     return this.request<any[]>('/evaluation-rules/global');
   }
@@ -337,6 +337,39 @@ class ApiClient {
       method: 'DELETE',
     });
   }
+  // ============ MODEL MANAGER ============
+
+  // Get built-in system models
+  async getSystemModels() {
+    return this.request<any[]>("/llm/models/system");
+  }
+
+  // Get user custom models
+  async getCustomModels() {
+    return this.request<any[]>("/llm/models/custom");
+  }
+
+  // Add custom model
+  async addCustomModel(data: {
+    nickname: string;
+    apiUrl: string;
+    apiKey: string;
+    provider: string;
+    description?: string;
+  }) {
+    return this.request("/llm/models/custom", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  // Delete custom model
+  async deleteCustomModel(id: string) {
+    return this.request(`/llm/models/custom/${id}`, {
+      method: "DELETE",
+    });
+  }
+
 }
 
 export const api = new ApiClient();

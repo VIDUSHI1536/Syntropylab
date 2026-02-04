@@ -82,9 +82,8 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-  sans: ["var(--font-sans)"],
-  heading: ["var(--font-heading)"],
-},
+        sans: ['Roboto', 'system-ui', 'sans-serif'],
+      },
 
       keyframes: {
         "accordion-down": {

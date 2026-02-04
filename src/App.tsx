@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Settings from "./pages/dashboard/Settings";
 import ProjectAudio from "./pages/dashboard/ProjectAudio";
 import ProjectAudiofile from "./pages/dashboard/ProjectAudiofile";
+import ProjectVideoPlayground from "./pages/dashboard/ProjectVideoPlayground";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const App = () => (
               <Route path="/dashboard/settings" element={<Settings />} />
               <Route path="/dashboard/projectaudioplay" element={<ProjectAudio />} />
               <Route path="/dashboard/projectaudio" element={<ProjectAudiofile />} />
+              <Route path="/dashboard/projectvideo" element={<ProjectVideoPlayground />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

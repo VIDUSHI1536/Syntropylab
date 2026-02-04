@@ -441,7 +441,7 @@ export default function Projects() {
                   <div>
                     <h3
                       className={cn(
-                        'font-semibold text-base group-hover:underline',
+                        'font-semibold text-base',
                         isDark ? 'text-white' : 'text-[#1f1b2e]'
                       )}
                     >

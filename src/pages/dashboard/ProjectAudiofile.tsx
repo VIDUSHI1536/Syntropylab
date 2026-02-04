@@ -107,7 +107,6 @@ export default function ProjectAudio() {
         try {
             const newProject = await api.createProject(selectedOrgId, {
                 name: newProjectName,
-                type: "audio",
             });
 
             setProjects((p) => [
@@ -123,8 +122,20 @@ export default function ProjectAudio() {
                 description: newProjectName,
             });
 
-            navigate(`/dashboard/projects/${newProject._id}`);
-        } catch {
+            // Temporary session (frontend only)
+            localStorage.setItem(
+                `audio-session-${newProject._id}`,
+                JSON.stringify({
+                    projectId: newProject._id,
+                    messages: [],
+                    systemPrompt: "You are a helpful customer service agent for TechNova.",
+                })
+            );
+
+            navigate(`/dashboard/projectaudioplay/${newProject._id}`);
+
+        } catch (err) {
+            console.error(err);
             toast({
                 title: "Error",
                 description: "Failed to create project",
@@ -132,6 +143,7 @@ export default function ProjectAudio() {
             });
         }
     };
+
 
     /* ---------------- Delete ---------------- */
 

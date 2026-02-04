@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate, Outlet, useLocation, useMatch } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
@@ -40,7 +40,6 @@ import {
 const navItems = [
   { to: '/dashboard/benchmark', icon: BarChart3, label: 'Benchmark' },
   { to: '/dashboard/projects', icon: FolderKanban, label: 'Project' },
-  // { to: '/dashboard/organizations', icon: Building2, label: 'Organizations' },
   { to: '/dashboard/datasets', icon: Database, label: 'Datasets' },
   { to: '/dashboard/evaluators', icon: FlaskConical, label: 'Evaluator Gallery' },
   { to: '/dashboard/analytics', icon: BarChart3, label: 'Analytics' },
@@ -52,12 +51,12 @@ export default function DashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  // ✅ Responsive mobile sidebar state
+  // Responsive mobile sidebar state
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [projectsOpen, setProjectsOpen] = useState(true);
 
 
-  // ✅ THEME (GLOBAL)
+  // THEME (GLOBAL)
   const { isDark, toggleTheme } = useTheme();
 
   const { user, logout } = useAuth();
@@ -68,8 +67,18 @@ export default function DashboardLayout() {
     await logout();
     navigate('/auth');
   };
-
-  // ✅ Sidebar component reused in desktop & mobile
+  const playgroundMatch = useMatch("/dashboard/projects/:projectId/playground");
+  const projectMatch = useMatch("/dashboard/projects/:projectId");
+  const audioMatch = useMatch("/dashboard/projectaudioplay");
+  const benchmarkMatch = useMatch("/dashboard/benchmark");
+  const videoMatch = useMatch("/dashboard/projectvideo");
+  const noPadding =
+    playgroundMatch ||
+    projectMatch ||
+    audioMatch ||
+    benchmarkMatch ||
+    videoMatch;
+  // Sidebar component reused in desktop & mobile
   const Sidebar = ({ variant }: { variant: 'desktop' | 'mobile' }) => (
     <aside
       className={cn(
@@ -104,7 +113,7 @@ export default function DashboardLayout() {
           {/* Logo Text */}
           {(!sidebarCollapsed || variant === 'mobile') && (
             <div className="leading-tight">
-              <p className="text-white font-semibold text-base font-grotesk">
+              <p className="text-white font-semibold text-base font-sans">
                 Syntropylabs
               </p>
 
@@ -223,7 +232,7 @@ export default function DashboardLayout() {
                       variant={variant}
                     />
                     <ProjectItem
-                      to="/dashboard/projects/video"
+                      to="/dashboard/projectvideo"
                       icon={Video}
                       label="Video"
                       sidebarCollapsed={sidebarCollapsed}
@@ -392,6 +401,7 @@ export default function DashboardLayout() {
   );
 
   return (
+
     <div
       className="min-h-screen flex transition-colors duration-500"
       style={{
@@ -450,7 +460,7 @@ export default function DashboardLayout() {
 
             <p
               className={cn(
-                'text-lg font-semibold font-grotesk',
+                'text-lg font-semibold font-sans',
                 isDark ? 'text-white' : 'text-[#1f1b2e]'
               )}
             >
@@ -475,7 +485,7 @@ export default function DashboardLayout() {
         </div>
 
         {/* outlet content */}
-        <div className="p-4 sm:p-6">
+        <div className={cn(!noPadding && "p-4 sm:p-6")}>
           <Outlet />
         </div>
       </main>
