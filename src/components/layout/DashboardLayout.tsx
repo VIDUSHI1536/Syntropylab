@@ -72,12 +72,14 @@ export default function DashboardLayout() {
   const audioMatch = useMatch("/dashboard/projectaudioplay");
   const benchmarkMatch = useMatch("/dashboard/benchmark");
   const videoMatch = useMatch("/dashboard/projectvideo");
+  const imagePlaygroundMatch = useMatch("/dashboard/projectimageplayground");
   const noPadding =
     playgroundMatch ||
     projectMatch ||
     audioMatch ||
     benchmarkMatch ||
-    videoMatch;
+    videoMatch ||
+    imagePlaygroundMatch;
   // Sidebar component reused in desktop & mobile
   const Sidebar = ({ variant }: { variant: 'desktop' | 'mobile' }) => (
     <aside
@@ -225,7 +227,7 @@ export default function DashboardLayout() {
                       variant={variant}
                     />
                     <ProjectItem
-                      to="/dashboard/projects/image"
+                      to="/dashboard/projectimageplayground"
                       icon={ImageIcon}
                       label="Image"
                       sidebarCollapsed={sidebarCollapsed}

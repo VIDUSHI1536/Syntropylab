@@ -27,7 +27,7 @@ const PRIMARY = "#5f3b96";
 
 type Mode = "text" | "image" | "frames";
 
-export default function ProjectVideo() {
+export default function ProjectImage() {
     const [models, setModels] = useState<{ id: string; name: string }[]>([]);
     const [model, setModel] = useState("");
     const { isDark } = useTheme();
@@ -83,19 +83,34 @@ export default function ProjectVideo() {
 
         loadModels();
     }, []);
-    const handleGenerate = async () => {
-        const res = await fetch("/api/video/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model,
-                prompt,
-            }),
-        });
+    const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+    const [loadingImage, setLoadingImage] = useState(false);
 
-        const data = await res.json();
-        console.log(data);
+    const handleGenerate = async () => {
+        try {
+            setLoadingImage(true);
+
+            const res = await fetch("/api/image/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: selectedModel,
+                    prompt,
+                }),
+            });
+
+            const data = await res.json();
+
+            // assuming API returns { imageUrl: "..." }
+            setGeneratedImage(data.imageUrl);
+
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingImage(false);
+        }
     };
+
 
     return (
         <div className="relative min-h-screen overflow-hidden">
@@ -117,7 +132,7 @@ export default function ProjectVideo() {
 
                 {/* ================= HEADER ================= */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold pb-4">VideoStudio</h1>
+                    <h1 className="text-3xl font-bold pb-4">ImageStudio</h1>
 
                     {/* TOP MAIN TABS */}
                     <div className="flex gap-8 border-b border-white/10 mb-8">
@@ -125,7 +140,7 @@ export default function ProjectVideo() {
                         <button
                             onClick={() => setActiveMainTab("generation")}
                             className={cn(
-                                "pb-3 text-sm font-medium transition",
+                                "pb-3 text-sm font-medium transition flex items-center gap-2",
                                 activeMainTab === "generation"
                                     ? "text-white border-b-2"
                                     : "text-white/50 hover:text-white"
@@ -135,8 +150,10 @@ export default function ProjectVideo() {
                                     activeMainTab === "generation" ? "#5f3b96" : "transparent",
                             }}
                         >
-                            ▶ Video Generation
+                            <ImageIcon className="w-4 h-4" />
+                            Image Generation
                         </button>
+
 
                         <button
                             onClick={() => setActiveMainTab("quality")}
@@ -168,7 +185,8 @@ export default function ProjectVideo() {
                                 onClick={() => setMode("text")}
                             >
                                 <Wand2 className="w-4 h-4" />
-                                Text to Video
+                                Text to Image
+
                             </ModeButton>
 
                             <ModeButton
@@ -184,7 +202,7 @@ export default function ProjectVideo() {
                                 onClick={() => setMode("frames")}
                             >
                                 <Layers className="w-4 h-4" />
-                                Frames to Video
+                                Frames to Image
                             </ModeButton>
 
                         </div>
@@ -280,9 +298,10 @@ export default function ProjectVideo() {
                                         style={{
                                             background: `linear-gradient(135deg, ${PRIMARY}, #6B5FC5)`,
                                         }}
+                                        onClick={handleGenerate}
                                     >
                                         <Wand2 className="w-4 h-4 mr-2" />
-                                        Generate Video
+                                        Generate Image
                                     </Button>
 
                                     <Button
@@ -301,26 +320,44 @@ export default function ProjectVideo() {
                             </div>
 
                             {/* ================= RIGHT : RESULT PANEL ================= */}
+                            {/* ================= RIGHT : RESULT PANEL ================= */}
                             <div
                                 className={cn(
-                                    "rounded-3xl h-[440px] border flex flex-col items-center justify-center",
+                                    "rounded-3xl h-[440px] border flex flex-col items-center justify-center overflow-hidden",
                                     isDark
                                         ? "bg-white/5 border-white/10"
                                         : "bg-white border-black/10"
                                 )}
                             >
-                                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4">
-                                    <Play className="w-7 h-7 opacity-60" />
-                                </div>
 
-                                <h3 className="text-lg font-semibold">
-                                    No video generated yet
-                                </h3>
+                                {loadingImage ? (
+                                    <div className="flex flex-col items-center gap-3">
+                                        <Loader2 className="w-6 h-6 animate-spin opacity-60" />
+                                        <p className="text-sm opacity-60">Generating image...</p>
+                                    </div>
+                                ) : generatedImage ? (
+                                    <img
+                                        src={generatedImage}
+                                        alt="Generated"
+                                        className="w-full h-full object-contain rounded-3xl"
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4">
+                                            <ImageIcon className="w-7 h-7 opacity-60" />
+                                        </div>
 
-                                <p className="text-sm opacity-60 mt-1 text-center max-w-sm">
-                                    Enter a prompt and choose a model to create your first masterpiece.
-                                </p>
+                                        <h3 className="text-lg font-semibold">
+                                            No image generated yet
+                                        </h3>
+
+                                        <p className="text-sm opacity-60 mt-1 text-center max-w-sm">
+                                            Enter a prompt and choose a model to generate your image.
+                                        </p>
+                                    </>
+                                )}
                             </div>
+
 
                         </div>
                     </>
@@ -460,12 +497,12 @@ function UploadTab() {
 
             {/* Evaluation Results */}
             <Card title="Evaluation Results">
-                <EmptyState text="Select a video and guidelines to see score." />
+                <EmptyState text="Select an image and guidelines to see score." />
             </Card>
 
             {/* Select Video */}
-            <Card title="Select Video">
-                <EmptyState text="No recent videos generated." />
+            <Card title="Select Image">
+                <EmptyState text="No recent images generated." />
                 <Button className="mt-4 w-full flex-1 h-12 rounded-xl text-white font-semibold shadow-lg"
                     style={{
                         background: `linear-gradient(135deg, ${PRIMARY}, #6B5FC5)`,
