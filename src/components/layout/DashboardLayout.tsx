@@ -220,21 +220,21 @@ export default function DashboardLayout() {
                       variant={variant}
                     />
                     <ProjectItem
-                      to="/dashboard/projectaudioplay"
+                      to="/dashboard/projectaudio"
                       icon={Mic}
                       label="Audio"
                       sidebarCollapsed={sidebarCollapsed}
                       variant={variant}
                     />
                     <ProjectItem
-                      to="/dashboard/projectimageplayground"
+                      to="/dashboard/projectimage"
                       icon={ImageIcon}
                       label="Image"
                       sidebarCollapsed={sidebarCollapsed}
                       variant={variant}
                     />
                     <ProjectItem
-                      to="/dashboard/projectvideo"
+                      to="/dashboard/projectvideofile"
                       icon={Video}
                       label="Video"
                       sidebarCollapsed={sidebarCollapsed}

@@ -23,6 +23,8 @@ import ProjectAudio from "./pages/dashboard/ProjectAudio";
 import ProjectAudiofile from "./pages/dashboard/ProjectAudiofile";
 import ProjectVideoPlayground from "./pages/dashboard/ProjectVideoPlayground";
 import ProjectImagePlayground from "./pages/dashboard/ProjectImagePlayground";
+import ProjectImageFiles from "./pages/dashboard/ProjectImageFiles";
+import ProjectVideoFiles from "./pages/dashboard/ProjectVideoFiles";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +90,8 @@ const App = () => (
               <Route path="/dashboard/projectaudio" element={<ProjectAudiofile />} />
               <Route path="/dashboard/projectvideo" element={<ProjectVideoPlayground />} />
               <Route path="/dashboard/projectimageplayground" element={<ProjectImagePlayground />} />
+              <Route path="/dashboard/projectimage" element={<ProjectImageFiles />} />
+              <Route path="/dashboard/projectvideofile" element={<ProjectVideoFiles />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
